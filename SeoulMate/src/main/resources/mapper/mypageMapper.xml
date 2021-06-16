@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.MypageDAO">
+	<insert id="likemarkInsert">
+		insert into likemark(lno, no, userid, category) values(likesq.nextval, ${param1}, #{param2}, #{param3})
+	</insert>
+	<delete id="likemarkDelete">
+		delete from likemark where no=${param1} and userid=#{param2}
+	</delete>
+	<select id="likemarkAllRecord" resultType="com.seoulmate.home.vo.LikeMarkVO">
+		select no, category from likemark where
+		category=#{param1} and userid=#{param2} order by lno desc
+	</select>
+	<select id="getHousedetails" resultType="com.seoulmate.home.vo.HouseWriteVO">
+		select * from housewrite where no=${param1}
+	</select>
+	<select id="getMinRentDeposit" resultType="com.seoulmate.home.vo.HouseRoomVO">
+		select min(rent) rent, min(deposit) deposit from houseroom where no=${param1} group by no
+	</select>
+	<select id="getMatedetails" resultType="com.seoulmate.home.vo.MateWriteVO">
+		select * from matewrite where no=${param1}
+	</select>
+	<select id="houseConfirm" parameterType="String" resultType="int" >
+		SELECT nvl(max(count(no)), 0) AS NO
+		FROM 
+			(SELECT h.NO, h.pno 
+			FROM 
+				(SELECT pno FROM PROPENSITY WHERE userid='${userid }' AND PCASE ='h') p
+			JOIN 
+				HOUSEWRITE h 
+			ON
+				h.pno=p.pno) 
+		GROUP BY NO
+	</select>
+	<select id="myPageHouseWriteSelect" parameterType="String" resultType="com.seoulmate.home.vo.HouseWriteVO">
+		SELECT house.NO, house.PNO, house.USERID, house.HOUSENAME, room.deposit, room.rent, house.ADDR,  house.HOUSEPIC1, 
+			house.ROOM , house.BATHROOM, house.NOWPEOPLE, house.SEARCHPEOPLE, house.WRITEDATE, house.ENDDATE, house.HOUSESTATE 
+		FROM 
+			(SELECT NO, min(DEPOSIT) AS DEPOSIT , min(rent) AS RENT  FROM HOUSEROOM GROUP BY no) room 
+		JOIN 
+			(SELECT h.NO, p.PNO, p.USERID ,h.ADDR, h.HOUSENAME, h.HOUSEPIC1, 
+				h.ROOM , h.BATHROOM, h.NOWPEOPLE, h.SEARCHPEOPLE, h.WRITEDATE, h.ENDDATE, h.HOUSESTATE 
+			FROM 
+				HOUSEWRITE h 
+			JOIN 
+				(SELECT pno, userid FROM PROPENSITY WHERE userid= #{userid } AND PCASE ='h') p 
+			ON 
+				h.pno=p.pno ) house 
+		ON 
+			house.NO=room.NO
+	</select>
+	<select  id="oneHouseWriteSelect" parameterType="int" resultType="com.seoulmate.home.vo.HouseWriteVO">
+		SELECT house.NO, house.PNO, house.USERID, house.HOUSENAME, room.deposit, room.rent, house.ADDR,  house.HOUSEPIC1, 
+			house.ROOM , house.BATHROOM, house.NOWPEOPLE, house.SEARCHPEOPLE, house.WRITEDATE, house.ENDDATE, house.HOUSESTATE 
+		FROM 
+			(SELECT NO, min(DEPOSIT) AS DEPOSIT , min(rent) AS RENT  FROM HOUSEROOM GROUP BY no) room 
+		JOIN 
+			(SELECT h.NO, h.PNO, h.USERID ,h.ADDR, h.HOUSENAME, h.HOUSEPIC1, 
+				h.ROOM , h.BATHROOM, h.NOWPEOPLE, h.SEARCHPEOPLE, h.WRITEDATE, h.ENDDATE, h.HOUSESTATE 
+			FROM 
+				HOUSEWRITE h 
+			WHERE 
+				NO=${no } ) house 
+		ON 
+			house.NO=room.NO
+	</select>
+	<select id="mateConfirm" parameterType="String" resultType="int" >
+		SELECT nvl(max(count(no)), 0) AS NO 
+		FROM 
+			(SELECT m.NO, m.pno
+		FROM 
+			(SELECT pno FROM PROPENSITY WHERE userid='${username}' AND PCASE ='m') p
+		JOIN 
+			MATEWRITE m 
+		ON
+			m.pno=p.pno) 
+		GROUP BY NO
+	</select>
+	<select id="myPageMateWriteSelect" parameterType="String" resultType="com.seoulmate.home.vo.MateWriteVO">
+		SELECT m1.NO, m1.userid, m1.area, m1.matePic1, m1.deposit, m1.rent,  to_char(enterdate, 'mm/dd') as enterdate, m1.minstay, m1.maxstay,
+			to_char(writedate, 'YYYY-MM-DD') AS writedate, to_char(enddate, 'YYYY-MM-DD') AS enddate, m1.matestate, m1.m_now,
+			mem.gender, mem.age
+		FROM 
+			(SELECT m.NO, p.pno, p.USERID, m.area, m.matepic1, 
+				m.deposit, m.rent, m.enterdate, m.minstay, m.maxstay, m.writedate, m.enddate, m.matestate,
+				p.m_now
+			FROM
+				(SELECT * FROM mateWrite WHERE userid='${userid }' ) m 
+			JOIN 
+				(SELECT pno, userid, m_now FROM PROPENSITY WHERE userid='${userid }' AND PCASE ='m') p 
+			ON 
+				m.pno=p.pno) m1
+		JOIN 
+			(SELECT userid, gender, to_char(birth, 'YYYY-MM-DD') AS birth, 
+				MONTHS_BETWEEN(TRUNC(SYSDATE,'YEAR'), TRUNC(to_date(to_char(birth,'YYYYMMDD'),'YYYYMMDD'), 'Year')) /12 + 1 AS age 
+			FROM 
+				MEMBER WHERE userid='${userid }') mem 
+			ON 
+				m1.userid=mem.userid
+	</select>
+	<select id="likeMarkConfirm" parameterType="String" resultType="int" >
+		select nvl(max(count(lno)), 0) as no from LIKEMARK WHERE userid= #{param1} GROUP BY lno
+	</select>
+	<select id="likeMarkSelect" parameterType="String" resultType="com.seoulmate.home.vo.LikeMarkVO" >
+		SELECT lno, NO, CATEGORY FROM LIKEMARK WHERE userid= #{param1}
+	</select>
+	<select id="houseLikeSelect" parameterType="com.seoulmate.home.vo.LikeMarkVO" resultType="com.seoulmate.home.vo.HouseWriteVO">
+		SELECT no, pno, userid, addr, housename, housepic1, room, bathroom, nowpeople, deposit, rent, WRITEDATE, ENDDATE, HOUSESTATE,
+			round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score
+		FROM
+			(SELECT no, pno, userid, addr, housename, housepic1, room, bathroom, nowpeople, deposit, rent, WRITEDATE, ENDDATE, HOUSESTATE, abs(m_h_noise-h_h_noise) AS h_noise, abs(m_h_pattern-h_h_pattern) AS h_pattern,
+				abs(m_h_pet-h_h_pet) AS h_pet, abs(m_h_petwith-h_h_petwith) AS h_petwith, abs(m_h_smoke-h_h_smoke) AS h_smoke, abs(m_h_mood-h_h_mood) AS h_mood,
+				abs(m_h_communication-h_h_communication) AS h_communication, abs(m_h_party-h_h_party) AS h_party, abs(m_h_enter-h_h_enter) AS h_enter, 
+				abs(m_m_pattern-h_m_pattern) AS m_pattern, abs(m_m_personality-h_m_personality) AS m_personality, abs(m_m_pet-h_m_pet) AS m_pet, 
+				abs(m_m_smoke-h_m_smoke) AS m_smoke, abs(m_m_age-h_m_age) AS m_age, abs(m_m_global-h_m_global) AS m_global, abs(m_m_now-h_m_now) AS m_now
+			FROM 
+				(select  h3.no as no, h3.pno, h3.userid, h3.addr, h3.housename AS housename, h3.housepic1, h3.room, h3.bathroom, h3.nowpeople, 
+					h3.deposit, h3.rent, h3.WRITEDATE, h3.ENDDATE, h3.HOUSESTATE,
+					m.h_noise AS m_h_noise, h3.h_noise AS h_h_noise, 
+					m.h_pattern AS m_h_pattern, h3.h_pattern AS h_h_pattern, m.h_pet AS m_h_pet, h3.h_pet AS h_h_pet, m.h_petwith AS m_h_petwith, h3.h_petwith AS h_h_petwith, m.h_smoke AS m_h_smoke, 
+					h3.h_smoke AS h_h_smoke, m.h_mood AS m_h_mood, h3.h_mood AS h_h_mood, m.h_communication AS m_h_communication, h3.h_communication AS h_h_communication, m.h_party AS m_h_party, 
+					h3.h_party AS h_h_party, m.h_enter AS m_h_enter, h3.h_enter AS h_h_enter, m.m_pattern AS m_m_pattern, h3.m_pattern AS h_m_pattern, m.m_personality AS m_m_personality, 
+					h3.m_personality AS h_m_personality, m.m_pet AS m_m_pet, h3.m_pet AS h_m_pet, m.m_smoke AS m_m_smoke, h3.m_smoke AS h_m_smoke, m.m_age AS m_m_age, 
+					h3.m_age AS h_m_age, m.m_global AS m_m_global, h3.m_global AS h_m_global, m.m_now AS m_m_now, h3.m_now AS h_m_now
+				from 
+					(SELECT pro.h_noise, pro.h_pattern, pro.h_pet, pro.h_petwith, pro.h_smoke, pro.h_mood, pro.h_communication, pro.h_party, pro.h_enter, pro.m_pattern, 
+						pro.m_personality, pro.m_pet, pro.m_smoke, pro.m_age, pro.m_global, pro.m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate
+					FROM 
+						PROPENSITY pro
+					WHERE 
+						pro.userid='${userid}' AND pcase='m') m 
+			full outer JOIN 
+				(select h2.NO as no, h2.pno, h2.userid, h2.addr, h2.housename, h2.housepic1, h2.room, h2.bathroom, h2.nowpeople,
+					h2.deposit, h2.rent, h2.WRITEDATE, h2.ENDDATE, h2.HOUSESTATE,
+					h_noise, h_pattern, h_pet, h_petwith, h_smoke, 
+					h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+				FROM 
+					(SELECT * FROM PROPENSITY WHERE housename IS NOT NULL) h 
+				JOIN 
+					(SELECT house.NO, house.PNO, house.USERID, house.HOUSENAME, room.deposit, room.rent, house.ADDR,  house.HOUSEPIC1, 
+						house.ROOM , house.BATHROOM, house.NOWPEOPLE, house.SEARCHPEOPLE, house.WRITEDATE, house.ENDDATE, house.HOUSESTATE
+					FROM 
+						(SELECT NO, min(DEPOSIT) AS DEPOSIT , min(rent) AS RENT 
+						FROM 
+							HOUSEROOM 
+						WHERE 
+							NO= ${no} GROUP BY no) room 
+					JOIN 
+						HOUSEWRITE house 
+					ON
+						house.NO=room.NO AND 1>=rownum
+					WHERE 
+						housestate='모집중') h2
+				ON h.pno=h2.pno) h3 
+			ON m.pdate=h3.pdate) h4) 
+	</select>
+	<select id="mateLikeSelect" parameterType="com.seoulmate.home.vo.LikeMarkVO" resultType="com.seoulmate.home.vo.MateWriteVO">
+		SELECT userid, NO, pno, deposit, rent, to_char(enterdate, 'mm/dd') as enterdate, area, matepic1, gender, age, m_m_now AS m_now,
+			round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+		FROM
+			(SELECT mw3.NO, mw3.userid AS userid, mw3.pno AS pno, mw3.deposit AS deposit, mw3.rent AS rent, mw3.enterdate AS enterdate, mw3.area AS area, mw3.matepic1 AS matepic1, 
+				abs(h_h_noise-m_h_noise) AS h_noise, abs(h_h_pattern-m_h_pattern) AS h_pattern, abs(h_h_pet-m_h_pet) AS h_pet, abs(h_h_petwith-m_h_petwith) AS h_petwith, 
+				abs(h_h_smoke-m_h_smoke) AS h_smoke, abs(h_h_mood-m_h_mood) AS h_mood, abs(h_h_communication-m_h_communication) AS h_communication, abs(h_h_party-m_h_party) AS h_party, 
+				abs(h_h_enter-m_h_enter) AS h_enter, abs(h_m_pattern-m_m_pattern) AS m_pattern, abs(h_m_personality-m_m_personality) AS m_personality, abs(h_m_pet-m_m_pet) AS m_pet, 
+				abs(h_m_smoke-m_m_smoke) AS m_smoke, abs(h_m_age-m_m_age) AS m_age, abs(h_m_global-m_m_global) AS m_global, abs(h_m_now-m_m_now) AS m_now,
+				mw3.gender, mw3.age, mw3.m_m_now
+			FROM 
+				(SELECT mw2.NO AS NO, mw2.userid AS userid, mw2.pno AS pno, mw2.deposit AS deposit, mw2.rent AS rent, mw2.enterdate AS enterdate, mw2.area AS area, mw2.matepic1,
+					h.h_noise AS h_h_noise, mw2.h_noise AS m_h_noise, h.h_pattern AS h_h_pattern, mw2.h_pattern AS m_h_pattern, h.h_pet AS h_h_pet, mw2.h_pet AS m_h_pet, 
+					h.h_petwith AS h_h_petwith, mw2.h_petwith AS m_h_petwith, h.h_smoke AS h_h_smoke, mw2.h_smoke AS m_h_smoke, 
+					h.h_mood AS h_h_mood, mw2.h_mood AS m_h_mood, h.h_communication AS h_h_communication, mw2.h_communication AS m_h_communication, 
+					h.h_party AS h_h_party, mw2.h_party AS m_h_party, h.h_enter AS h_h_enter, mw2.h_enter AS m_h_enter, h.m_pattern AS h_m_pattern, mw2.m_pattern AS m_m_pattern, 
+					h.m_personality AS h_m_personality, mw2.m_personality AS m_m_personality, h.m_pet AS h_m_pet, mw2.m_pet AS m_m_pet, h.m_smoke AS h_m_smoke, mw2.m_smoke AS m_m_smoke, 
+					h.m_age AS h_m_age, mw2.m_age AS m_m_age, h.m_global AS h_m_global, mw2.m_global AS m_m_global, h.m_now AS h_m_now, mw2.m_now AS m_m_now,
+					mw2.gender, mw2.age
+				FROM
+					(SELECT pno, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+						m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+					FROM 
+						PROPENSITY WHERE userid=#{userid} AND pcase='h') h   
+					FULL OUTER JOIN 
+						(SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+							mw.enddate, mw.matestate, mw.mateprofile, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+							p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, substr(to_char(p.pdate, 'YYYY'), 1, 1) AS pdate,
+							mw.gender, mw.age
+						FROM 
+							(SELECT mate.NO, mate.pno, mate.userid, mate.area, mate.matepic1, mate.matepic2, mate.matepic3, mate.deposit, mate.rent, mate.enterdate, mate.minstay, mate.maxstay, mate.writedate,
+								mate.enddate, mate.matestate, mate.mateprofile, mem.gender, mem.age
+							FROM 
+								MATEWRITE mate 
+							JOIN 
+								(SELECT userid, gender, to_char(birth, 'YYYY-MM-DD') AS birth, 
+									MONTHS_BETWEEN(TRUNC(SYSDATE,'YEAR'), TRUNC(to_date(to_char(birth,'YYYYMMDD'),'YYYYMMDD'), 'Year')) /12 + 1 AS age 
+								FROM 
+									MEMBER) mem
+							ON 
+								mate.userid=mem.userid where matestate='모집중') mw 
+						JOIN 
+							(SELECT * FROM PROPENSITY WHERE pcase='m') p
+						ON 
+							mw.pno=p.pno) mw2 
+					ON h.pdate=mw2.pdate) mw3) 
+					WHERE no=${no}  AND 1>=rownum
+	</select>
+	<select id="applyInviteSelect" parameterType="com.seoulmate.home.vo.ApplyInviteVO" resultType="com.seoulmate.home.vo.ApplyInviteVO">
+		SELECT aino, no, userid, to_char(aidate, 'YYYY-MM-DD') as aidate, state, confirm
+		FROM
+			applyInvite 
+		WHERE
+		<if test="msg == 'takeApply'"> NO=${no } AND state='신청'</if>
+		<if test="msg == 'sendInvite'">NO=${no } AND state='초대'</if>
+		<if test="msg == 'takeInvite'">userid='${userid }' AND state='초대'</if>
+		<if test="msg == 'sendApply'">userid='${userid }' AND state='신청'</if>
+	</select>
+	<delete id="mypageApplyInviteCancel" parameterType="com.seoulmate.home.vo.ApplyInviteVO">
+		delete from applyInvite 
+		where 
+			no=${no} and userid='${userid}' 
+		<if test="msg=='sendInvite'"> and state='초대'</if>
+		<if test="msg=='takeInvite'"> and state='초대'</if>
+		<if test="msg=='sendApply'"> and state='신청'</if>
+		<if test="msg=='takeApply'"> and state='신청'</if>
+	</delete>
+	<update id="applyInviteApproveUpdate"  parameterType="com.seoulmate.home.vo.ApplyInviteVO">
+		update applyInvite set confirm='승인' 
+		where 
+		<if test="msg=='takeInvite'" > no=${no} and userid='${userid}' and state='초대'</if>
+		<if test="msg=='takeApply'"> no=${no} and userid='${userid}' and state='신청'</if>
+	</update>
+	<select id="chatHouseSelect" parameterType="int" resultType="com.seoulmate.home.vo.HouseWriteVO">
+		SELECT userid, housename from houseWrite where no=${no }
+	</select>	
+	<select id="chatCheck" parameterType="String" resultType="com.seoulmate.home.vo.ChatRoomVO">
+		SELECT no, name, chatuser1, chatuser2 
+		FROM CHATROOM 
+		WHERE CHATUSER1=#{param1} AND CHATUSER2=#{param2} 
+	</select>
+	<select id="chatCheckName" parameterType="String" resultType="int">
+		SELECT nvl(max(count(name)),0)  FROM CHATROOM
+		WHERE CHATUSER1=#{param2} AND CHATUSER2=#{param3} AND name LIKE '%${param1}%' Group by name
+	</select>
+	<insert id="chatInsert" parameterType="String" >
+		INSERT into chatroom(no, name, chatuser1, chatuser2, chatroomdate) 
+		values(chatsq.nextval, #{param1}, #{param2}, #{param3}, sysdate)
+	</insert>
+	<update id="chatUpdate" parameterType="com.seoulmate.home.vo.ChatRoomVO">
+		UPDATE chatRoom set name=#{name} where chatuser1=#{chatUser1} and chatuser2=#{chatUser2} 
+	</update>
+	<select id="getLikedNumber" resultType="String">
+		select no from likemark where  userid=#{param1}
+	</select>
+	<select id="noConfirmHouseOrMate" parameterType="String" resultType="int">
+		select nvl(max(count(no)), 0) as no from ${param2} WHERE no=${param1} GROUP BY no
+	</select>
+	<select id="pnoConfirm" parameterType="String" resultType="int">
+		select nvl(max(count(pno)), 0) as pno from PROPENSITY 
+		WHERE userid=#{param1} and pcase=#{param2} 
+		GROUP BY pno
+	</select>
+	<select id="pno_Select" parameterType="int" resultType="int" >
+		SELECT pno FROM HOUSEWRITE WHERE NO=${param1}
+	</select> 
+	<update id="stateCompleteUpdate" parameterType="String">
+		update ${param1 } set ${param2} = '매칭 완료' where no=${param3} and userid=#{param4}
+	</update>
+	<insert id="applyInviteInsert" parameterType="com.seoulmate.home.vo.ApplyInviteVO">
+		INSERT INTO APPLYINVITE(aino, NO, userid, state, confirm) values(aisq.nextval, ${no}, #{userid}, #{msg}, '미승인')
+	</insert>
+	<select id="houseListSelect" parameterType="String" resultType="com.seoulmate.home.vo.HouseWriteVO" >
+		SELECT h.NO, h.housename
+		FROM HOUSEWRITE h
+		JOIN 
+			(SELECT aino, no FROM APPLYINVITE WHERE userid='${param2}' AND state='초대') a
+		ON h.NO=a.NO(+)
+		WHERE h.userid='${param1}' AND aino IS NULL AND HOUSESTATE='모집중'
+	</select>
+	<select id="housenameSelect" parameterType="String"  resultType="int">
+		select no from HOUSEWRITE WHERE housename=#{param1}
+	</select>
+
+	<select id="getUsersHouseWriteNum" resultType="String">
+		select no from housewrite where userid=#{param1}
+	</select>
+	<select id="getUsersMateWriteNum" resultType="String">
+		select no from matewrite where userid=#{param1}
+	</select>
+	<select  id="checkApplyInvite" parameterType="com.seoulmate.home.vo.ApplyInviteVO" resultType="int">
+		select nvl(max(NO),0) AS NO from applyInvite where no=${no} and userid='${userid}' and state='${msg}'
+	</select>
+	<select id="applyInviteList" parameterType="String" resultType="com.seoulmate.home.vo.ApplyInviteVO">
+		select aino, no, userid, aidate, state, confirm from applyInvite where userid=#{param1}
+	</select>
+	<select id="likemarkerSelect" resultType="int">
+		select nvl(max(NO),0) AS NO FROM LIKEMARK WHERE no=${param1} and userid='${param2}' AND CATEGORY='${param3}'
+	</select>
+	<select id="payRecordCnt" parameterType="String" resultType="int">
+		select count(no) as no from pay where userid=#{param1} 
+	</select>
+	<select id="payList" parameterType="java.util.HashMap" resultType="com.seoulmate.home.vo.PayVO">
+		select * from (select * from 
+		(select * from  pay where userid='${pVO.userid}' 
+			<if test="pVO.payStart!='' and pVO.payStart!=null"> and payStart like '%${payStart}%'</if>
+		 ORDER BY payStart DESC )
+		where <![CDATA[rownum<=]]>${pagingVO.pageNum * pagingVO.onePageRecode} order by payStart asc)
+			where <![CDATA[rownum<=]]><if test="pagingVO.pageNum==pagingVO.totalPage">${pagingVO.lastPageRecode}</if> 
+	  					<if test="pagingVO.pageNum!=pagingVO.totalPage">${pagingVO.onePageRecode}</if> ORDER BY payStart DESC
+	</select>
+</mapper>
+

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.seoulmate.home.dao.QnaDAO">
+	<insert id="contactInsert" parameterType="com.seoulmate.home.vo.ContactVO">
+   		insert into qna(no, userid, username, email, category, qContent)
+		values(qnasq.nextval, #{userid}, #{username}, #{email}, #{category}, #{qContent})
+   	</insert>
+   	<select id="useridCheck" resultType="String">
+   		select state from member where userid = #{param1}
+   	</select>
+   	<select id="faqAllRecord" resultType="com.seoulmate.home.vo.FaqVO">
+ 		SELECT NO, subject, content FROM faq ORDER BY NO DESC
+ 	</select>
+ </mapper> 	

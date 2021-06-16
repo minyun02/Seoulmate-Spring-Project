@@ -1,0 +1,20 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	<c:if test="${logId!=null}">
+	<div class="chat_wrap" style="display:block;"> <!-- 370 580 -->
+		<iframe id="the_iframe" style="" src="http://192.168.0.118:9091/chat?userid=${logId}&username=${logName}" width="100vw" height="100vh" frameborder=0 framespacing=0 marginheight=0 marginwidth=0 scrolling=no vspace=0></iframe>
+      	<button class="btn_chat"></button>
+	</div>  
+	</c:if>
+	<div class="foot_wrap">
+		<footer>
+			<h1 class="logo"><a href=""></a></h1>
+			<p>Copyright © 2021 공일이오 Co., Ltd. All rights reserved.</p>
+			<div class="foot_btns">
+				<a href="qna">FAQ</a>
+				<a href="/home/contact">문의하기</a>
+			</div>
+		</footer>
+	</div>
+	</body>
+</html> 

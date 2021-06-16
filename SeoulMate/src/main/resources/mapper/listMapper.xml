@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.ListDAO">
+  	<select id="mate_m_gender" parameterType="String" resultType="int">
+  		select m_gender from propensity where pcase='m' and userid=#{param1}
+  	</select>
+  	<select id="house_m_gender" resultType="int">
+  		select m_gender from propensity where pcase='h' and userid=#{param1} and pno=#{param2}
+  	</select>
+  	<select id="premiumHouseList" resultType="com.seoulmate.home.vo.ListVO">
+  	SELECT *
+  	FROM (SELECT * 
+  	FROM (SELECT * 
+  	FROM (SELECT no, pno, userid, m_gender, addr, housename, housepic1, room, bathroom, nowpeople, rent, deposit, h_noise, h_pattern, h_petwith, h_mood, h_communication, score
+  	from (SELECT no, pno, userid, m_gender, addr, housename, housepic1, room, bathroom, nowpeople, rent, deposit, h_noise, h_pattern, h_petwith, h_mood, h_communication, 
+		round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+	from(SELECT no, pno, userid, m_gender, addr, housename, housepic1, room, bathroom, nowpeople, rent, deposit, abs(m_h_noise-h_h_noise) AS h_noise, abs(m_h_pattern-h_h_pattern) AS h_pattern,
+		abs(m_h_pet-h_h_pet) AS h_pet, abs(m_h_petwith-h_h_petwith) AS h_petwith, abs(m_h_smoke-h_h_smoke) AS h_smoke, abs(m_h_mood-h_h_mood) AS h_mood,
+		abs(m_h_communication-h_h_communication) AS h_communication, abs(m_h_party-h_h_party) AS h_party, abs(m_h_enter-h_h_enter) AS h_enter, 
+		abs(m_m_pattern-h_m_pattern) AS m_pattern, abs(m_m_personality-h_m_personality) AS m_personality, abs(m_m_pet-h_m_pet) AS m_pet, 
+		abs(m_m_smoke-h_m_smoke) AS m_smoke, abs(m_m_age-h_m_age) AS m_age, abs(m_m_global-h_m_global) AS m_global, abs(m_m_now-h_m_now) AS m_now
+	FROM (select  h3.no as no, h3.pno, h3.userid, h3.m_gender, h3.addr, h3.housename AS housename, h3.housepic1, h3.room, h3.bathroom, h3.nowpeople, h3.rent, h3.deposit, m.h_noise AS m_h_noise, h3.h_noise AS h_h_noise, 
+		m.h_pattern AS m_h_pattern, h3.h_pattern AS h_h_pattern, m.h_pet AS m_h_pet, h3.h_pet AS h_h_pet, m.h_petwith AS m_h_petwith, h3.h_petwith AS h_h_petwith, m.h_smoke AS m_h_smoke, 
+		h3.h_smoke AS h_h_smoke, m.h_mood AS m_h_mood, h3.h_mood AS h_h_mood, m.h_communication AS m_h_communication, h3.h_communication AS h_h_communication, m.h_party AS m_h_party, 
+		h3.h_party AS h_h_party, m.h_enter AS m_h_enter, h3.h_enter AS h_h_enter, m.m_pattern AS m_m_pattern, h3.m_pattern AS h_m_pattern, m.m_personality AS m_m_personality, 
+		h3.m_personality AS h_m_personality, m.m_pet AS m_m_pet, h3.m_pet AS h_m_pet, m.m_smoke AS m_m_smoke, h3.m_smoke AS h_m_smoke, m.m_age AS m_m_age, 
+		h3.m_age AS h_m_age, m.m_global AS m_m_global, h3.m_global AS h_m_global, m.m_now AS m_m_now, h3.m_now AS h_m_now
+	from (SELECT h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+		m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM PROPENSITY WHERE userid=#{param1} AND pcase='m') m
+	full outer JOIN (select h2.NO as no, h2.pno, h2.userid, h.m_gender, h2.addr, h2.housename, h2.housepic1, h2.room, h2.bathroom, h2.nowpeople, h2.rent, h2.deposit, h_noise, h_pattern, h_pet, h_petwith, h_smoke, 
+		h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM (
+	<if test='param2 == 1 || param2 == 3'>
+		select * from propensity where pcase='h' and housename is not null and m_gender=(select  pm.gender from member pm 
+		join (select userid, m_gender, pcase from propensity) p on pm.userid=p.userid and pm.gender=p.m_gender and pcase='m' and pm.userid=#{param1})
+	</if>
+	<if test='param2 == 2'>
+		select * from propensity where pcase='h' and housename is not null and m_gender=(select pm.gender from member pm 
+		JOIN (select userid, m_gender, pcase from propensity) p on pm.userid=p.userid and m_gender=2 and pcase='m' and pm.userid=#{param1}) or (m_gender=2 and housename is not null)
+	</if>) h 
+	JOIN (SELECT hw.NO, hw.pno, userid, addr, housename, housepic1, room, bathroom, nowpeople, hr.rent, hr.deposit 
+	FROM (SELECT NO, pno, userid, addr, housename, housepic1, room, bathroom, nowpeople 
+	FROM HOUSEWRITE WHERE housestate='모집중' and userid!=#{param1} and houseshow='공개') hw 
+	JOIN (SELECT z1.NO, z1.rent, deposit FROM (SELECT NO, min(rent) AS rent FROM houseroom GROUP BY NO)z1 
+	JOIN (SELECT NO, rent, deposit FROM houseroom)z2 ON z1.NO=z2.NO AND z1.rent=z2.rent) hr ON hw.NO=hr.NO) h2
+	ON h.pno=h2.pno) h3 ON m.pdate=h3.pdate) h4) 
+	<if test='param3 !=null'> where addr like '%${param3}%'</if>)
+	<if test='param4 != null and param4>0'>where <![CDATA[rent<=${param4}]]></if>)
+	<if test='param5 != null and param5>0'>where <![CDATA[deposit<=${param5}]]></if>)
+	<if test='param6 != null and param6!=0'>where <![CDATA[m_gender=${param6}]]></if>
+	ORDER BY score desc) where <![CDATA[rownum<=3]]>
+  	</select>
+  	<select id="premiumHouseScore" resultType="com.seoulmate.home.vo.ListVO">
+  	SELECT no, pno, userid, m_gender, addr, housename, housepic1, room, bathroom, nowpeople, h_noise, h_pattern, h_petwith, h_mood, h_communication, 
+		round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+	from(SELECT no, pno, userid, m_gender, addr, housename, housepic1, room, bathroom, nowpeople, abs(m_h_noise-h_h_noise) AS h_noise, abs(m_h_pattern-h_h_pattern) AS h_pattern,
+		abs(m_h_pet-h_h_pet) AS h_pet, abs(m_h_petwith-h_h_petwith) AS h_petwith, abs(m_h_smoke-h_h_smoke) AS h_smoke, abs(m_h_mood-h_h_mood) AS h_mood,
+		abs(m_h_communication-h_h_communication) AS h_communication, abs(m_h_party-h_h_party) AS h_party, abs(m_h_enter-h_h_enter) AS h_enter, 
+		abs(m_m_pattern-h_m_pattern) AS m_pattern, abs(m_m_personality-h_m_personality) AS m_personality, abs(m_m_pet-h_m_pet) AS m_pet, 
+		abs(m_m_smoke-h_m_smoke) AS m_smoke, abs(m_m_age-h_m_age) AS m_age, abs(m_m_global-h_m_global) AS m_global, abs(m_m_now-h_m_now) AS m_now
+	FROM (select  h3.no as no, h3.pno, h3.userid, h3.m_gender, h3.addr, h3.housename AS housename, h3.housepic1, h3.room, h3.bathroom, h3.nowpeople, m.h_noise AS m_h_noise, h3.h_noise AS h_h_noise, 
+		m.h_pattern AS m_h_pattern, h3.h_pattern AS h_h_pattern, m.h_pet AS m_h_pet, h3.h_pet AS h_h_pet, m.h_petwith AS m_h_petwith, h3.h_petwith AS h_h_petwith, m.h_smoke AS m_h_smoke, 
+		h3.h_smoke AS h_h_smoke, m.h_mood AS m_h_mood, h3.h_mood AS h_h_mood, m.h_communication AS m_h_communication, h3.h_communication AS h_h_communication, m.h_party AS m_h_party, 
+		h3.h_party AS h_h_party, m.h_enter AS m_h_enter, h3.h_enter AS h_h_enter, m.m_pattern AS m_m_pattern, h3.m_pattern AS h_m_pattern, m.m_personality AS m_m_personality, 
+		h3.m_personality AS h_m_personality, m.m_pet AS m_m_pet, h3.m_pet AS h_m_pet, m.m_smoke AS m_m_smoke, h3.m_smoke AS h_m_smoke, m.m_age AS m_m_age, 
+		h3.m_age AS h_m_age, m.m_global AS m_m_global, h3.m_global AS h_m_global, m.m_now AS m_m_now, h3.m_now AS h_m_now
+	from (SELECT h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+		m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM PROPENSITY WHERE userid=#{param1} AND pcase='m') m
+	full outer JOIN (select h2.NO as no, h2.pno, h2.userid, h.m_gender, h2.addr, h2.housename, h2.housepic1, h2.room, h2.bathroom, h2.nowpeople, h_noise, h_pattern, h_pet, h_petwith, h_smoke, 
+		h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM (SELECT * FROM PROPENSITY WHERE housename IS NOT NULL) h 
+	JOIN (SELECT hw.NO, hw.pno, userid, addr, housename, housepic1, room, bathroom, nowpeople 
+	FROM (SELECT NO, pno, userid, addr, housename, housepic1, room, bathroom, nowpeople FROM HOUSEWRITE WHERE housestate='모집중') hw) h2 
+	ON h.pno=h2.pno) h3 ON m.pdate=h3.pdate) h4) where pno=#{param2} ORDER BY score desc
+  	</select>
+  	<select id="myMatePnoCheck" resultType="int">
+  		SELECT count(pno) FROM PROPENSITY WHERE pcase='m' AND userid=#{param1}
+  	</select>
+  	<select id="myHousePnoCount" resultType="int">
+  		select count(pno) FROM PROPENSITY WHERE pcase='h' AND userid=#{param1}
+  	</select>
+  	<select id="myHousePno" resultType="com.seoulmate.home.vo.PropensityVO">
+  		SELECT pno, housename FROM PROPENSITY WHERE pcase='h' AND userid=#{param1}
+  	</select>
+  	<select id="newHpno" parameterType="String" resultType="int">
+  		SELECT pno FROM (SELECT pno FROM PROPENSITY WHERE pcase='h' AND userid=#{param1} ORDER BY pno DESC) WHERE rownum=1
+  	</select>
+  	<select id="premiumMateList" resultType="com.seoulmate.home.vo.ListVO">
+  	SELECT * 
+  	FROM (SELECT *
+  	FROM (SELECT * 
+	FROM (SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, score 
+	FROM (SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, 
+		round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+	from(SELECT mw3.NO, mw3.userid AS userid, mw3.pno AS pno, mw3.gender AS gender, mw3.m_gender AS m_gender, mw3.deposit AS deposit, mw3.rent AS rent, mw3.enterdate AS enterdate, mw3.area AS area, mw3.matepic1 AS matepic1, 
+		abs(h_h_noise-m_h_noise) AS h_noise, abs(h_h_pattern-m_h_pattern) AS h_pattern, abs(h_h_pet-m_h_pet) AS h_pet, abs(h_h_petwith-m_h_petwith) AS h_petwith, 
+		abs(h_h_smoke-m_h_smoke) AS h_smoke, abs(h_h_mood-m_h_mood) AS h_mood, abs(h_h_communication-m_h_communication) AS h_communication, abs(h_h_party-m_h_party) AS h_party, 
+		abs(h_h_enter-m_h_enter) AS h_enter, abs(h_m_pattern-m_m_pattern) AS m_pattern, abs(h_m_personality-m_m_personality) AS m_personality, abs(h_m_pet-m_m_pet) AS m_pet, 
+		abs(h_m_smoke-m_m_smoke) AS m_smoke, abs(h_m_age-m_m_age) AS m_age, abs(h_m_global-m_m_global) AS m_global, abs(h_m_now-m_m_now) AS m_now
+	FROM (SELECT mw2.NO AS NO, mw2.userid AS userid, mw2.pno AS pno, mw2.gender AS gender, mw2.m_gender AS m_gender, mw2.deposit AS deposit, mw2.rent AS rent, mw2.enterdate AS enterdate, mw2.area AS area, mw2.matepic1,
+		h.h_noise AS h_h_noise, mw2.h_noise AS m_h_noise, h.h_pattern AS h_h_pattern, mw2.h_pattern AS m_h_pattern, h.h_pet AS h_h_pet, mw2.h_pet AS m_h_pet, 
+		h.h_petwith AS h_h_petwith, mw2.h_petwith AS m_h_petwith, h.h_smoke AS h_h_smoke, mw2.h_smoke AS m_h_smoke, 
+		h.h_mood AS h_h_mood, mw2.h_mood AS m_h_mood, h.h_communication AS h_h_communication, mw2.h_communication AS m_h_communication, 
+		h.h_party AS h_h_party, mw2.h_party AS m_h_party, h.h_enter AS h_h_enter, mw2.h_enter AS m_h_enter, h.m_pattern AS h_m_pattern, mw2.m_pattern AS m_m_pattern, 
+		h.m_personality AS h_m_personality, mw2.m_personality AS m_m_personality, h.m_pet AS h_m_pet, mw2.m_pet AS m_m_pet, h.m_smoke AS h_m_smoke, mw2.m_smoke AS m_m_smoke, 
+		h.m_age AS h_m_age, mw2.m_age AS m_m_age, h.m_global AS h_m_global, mw2.m_global AS m_m_global, h.m_now AS h_m_now, mw2.m_now AS m_m_now
+	FROM (SELECT pno, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+		m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM PROPENSITY WHERE userid=#{param1} AND pcase='h' AND pno=#{param2}) h 
+	FULL OUTER JOIN 
+	(<if test='param3 == 1 || param3 == 3'>
+	SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+		mw.enddate, mw.matestate, mw.mateprofile, g.gender, g.m_gender, g.h_noise, g.h_pattern, g.h_pet, g.h_petwith, g.h_smoke, g.h_mood, g.h_communication, g.h_party, 
+		g.h_enter, g.m_pattern, g.m_personality, g.m_pet, g.m_smoke, g.m_age, g.m_global, g.m_now, g.pdate 
+	FROM (SELECT * FROM MATEWRITE WHERE matestate='모집중' and userid!=#{param1} and mateshow='공개') mw 
+	JOIN (SELECT p.userid, m.gender, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+		p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.pdate 
+	FROM (SELECT userid, gender FROM MEMBER) m 
+	JOIN (SELECT userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, 
+		m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+	FROM PROPENSITY WHERE pcase='m') p ON m.userid=p.userid AND m.gender=(SELECT m_gender 
+	FROM PROPENSITY WHERE userid=#{param1} AND pcase='h' AND pno=#{param2})) g ON mw.userid=g.userid
+	</if>
+	<if test='param3 == 2'>
+	select mw1.NO, mw1.pno, mw1.userid, mw1.area, mw1.matepic1, mw1.matepic2, mw1.matepic3, mw1.deposit, mw1.rent, mw1.enterdate, mw1.minstay, mw1.maxstay, mw1.writedate, 
+		mw1.enddate, mw1.matestate, mw1.mateprofile, m.gender, mw1.m_gender,  mw1.h_noise, mw1.h_pattern, mw1.h_pet, mw1.h_petwith, mw1.h_smoke, mw1.h_mood, mw1.h_communication, mw1.h_party, 
+		mw1.h_enter, mw1.m_pattern, mw1.m_personality, mw1	.m_pet, mw1.m_smoke, mw1.m_age, mw1.m_global, mw1.m_now, mw1.pdate
+	from (select gender, userid from member) m 
+	join (SELECT mw.NO, mw.pno, mw.userid, mw.deposit, mw.rent, mw.enterdate, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.minstay, mw.maxstay, 
+		mw.writedate, mw.enddate, mw.matestate, mw.mateprofile, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication,
+		p.h_party, p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.m_gender, p.pdate
+	FROM (SELECT pno, userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+		m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM PROPENSITY WHERE pcase='m') p 
+	JOIN (SELECT NO, userid, pno, deposit, rent, enterdate, area, matepic1, matepic2, matepic3, minstay, maxstay, writedate, enddate, matestate, mateprofile 
+	FROM MATEWRITE WHERE matestate='모집중' and userid!=#{param1} and mateshow='공개') mw ON p.pno=mw.pno) mw1 on m.userid=mw1.userid and mw1.m_gender=2
+	</if>) mw2 ON h.pdate=mw2.pdate) mw3)
+	<if test='param4 !=null'> where area like '%${param4}%'</if>)
+	<if test='param5 != null and param5>0'> where <![CDATA[rent<=#{param5}]]></if>)
+	<if test='param6 != null and param6>0'> where <![CDATA[deposit<=#{param6}]]></if>)
+	<if test='param7 != null and param7!=0'> where <![CDATA[gender=#{param7}]]></if>
+	ORDER BY score DESC) WHERE <![CDATA[rownum<=3]]>
+  	</select>
+  	<select id="premiumMateScore" resultType="com.seoulmate.home.vo.ListVO">
+  	SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, 
+		round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+	from(SELECT mw3.NO, mw3.userid AS userid, mw3.pno AS pno, mw3.gender AS gender, mw3.m_gender AS m_gender, mw3.deposit AS deposit, mw3.rent AS rent, mw3.enterdate AS enterdate, mw3.area AS area, mw3.matepic1 AS matepic1, 
+		abs(h_h_noise-m_h_noise) AS h_noise, abs(h_h_pattern-m_h_pattern) AS h_pattern, abs(h_h_pet-m_h_pet) AS h_pet, abs(h_h_petwith-m_h_petwith) AS h_petwith, 
+		abs(h_h_smoke-m_h_smoke) AS h_smoke, abs(h_h_mood-m_h_mood) AS h_mood, abs(h_h_communication-m_h_communication) AS h_communication, abs(h_h_party-m_h_party) AS h_party, 
+		abs(h_h_enter-m_h_enter) AS h_enter, abs(h_m_pattern-m_m_pattern) AS m_pattern, abs(h_m_personality-m_m_personality) AS m_personality, abs(h_m_pet-m_m_pet) AS m_pet, 
+		abs(h_m_smoke-m_m_smoke) AS m_smoke, abs(h_m_age-m_m_age) AS m_age, abs(h_m_global-m_m_global) AS m_global, abs(h_m_now-m_m_now) AS m_now
+	FROM (SELECT mw2.NO AS NO, mw2.userid AS userid, mw2.pno AS pno, mw2.gender AS gender, mw2.m_gender AS m_gender, mw2.deposit AS deposit, mw2.rent AS rent, mw2.enterdate AS enterdate, mw2.area AS area, mw2.matepic1,
+		h.h_noise AS h_h_noise, mw2.h_noise AS m_h_noise, h.h_pattern AS h_h_pattern, mw2.h_pattern AS m_h_pattern, h.h_pet AS h_h_pet, mw2.h_pet AS m_h_pet, 
+		h.h_petwith AS h_h_petwith, mw2.h_petwith AS m_h_petwith, h.h_smoke AS h_h_smoke, mw2.h_smoke AS m_h_smoke, 
+		h.h_mood AS h_h_mood, mw2.h_mood AS m_h_mood, h.h_communication AS h_h_communication, mw2.h_communication AS m_h_communication, 
+		h.h_party AS h_h_party, mw2.h_party AS m_h_party, h.h_enter AS h_h_enter, mw2.h_enter AS m_h_enter, h.m_pattern AS h_m_pattern, mw2.m_pattern AS m_m_pattern, 
+		h.m_personality AS h_m_personality, mw2.m_personality AS m_m_personality, h.m_pet AS h_m_pet, mw2.m_pet AS m_m_pet, h.m_smoke AS h_m_smoke, mw2.m_smoke AS m_m_smoke, 
+		h.m_age AS h_m_age, mw2.m_age AS m_m_age, h.m_global AS h_m_global, mw2.m_global AS m_m_global, h.m_now AS h_m_now, mw2.m_now AS m_m_now
+	FROM (SELECT pno, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+		m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+	FROM PROPENSITY WHERE userid=#{param1} AND pcase='h' AND pno=#{param2}) h 
+	FULL OUTER JOIN 
+	(SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+		mw.enddate, mw.matestate, mw.mateprofile, g.gender, g.m_gender, g.h_noise, g.h_pattern, g.h_pet, g.h_petwith, g.h_smoke, g.h_mood, g.h_communication, g.h_party, 
+		g.h_enter, g.m_pattern, g.m_personality, g.m_pet, g.m_smoke, g.m_age, g.m_global, g.m_now, g.pdate 
+	FROM (SELECT * FROM MATEWRITE WHERE matestate='모집중') mw 
+	JOIN (SELECT p.userid, m.gender, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+		p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.pdate 
+	FROM (SELECT userid, gender FROM MEMBER) m 
+	JOIN (SELECT userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, 
+		m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+	FROM PROPENSITY WHERE pcase='m') p ON m.userid=p.userid) g ON mw.userid=g.userid) mw2 ON h.pdate=mw2.pdate) mw3) WHERE pno=#{param3} ORDER BY score DESC
+  	</select>
+  </mapper>

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.seoulmate.home.dao.AdminDAO">
+ 	<select id="memberSelect" parameterType="com.seoulmate.home.vo.PagingVO" resultType="com.seoulmate.home.vo.MemberVO">
+		select * from (select * from (select * from 
+  		(select * from 
+  		(select * from 
+  		(select m.no, m.userid, m.username, m.tel, m.email, m.grade, m.state, r.reportcnt from member m join  
+		(select userid, count(num) as reportcnt from report group by userid) r on m.userid=r.userid(+) 
+  		<if test='searchKey !=null and searchWord != null and searchKey != "" and searchWord !=""'>where m.${searchKey} like '%${searchWord}%'</if>)
+  		<if test="grade != null and grade != 0"> where grade=${grade} </if>)
+  		<if test='state != null and state !=""'> where state=#{state}</if>)  
+  		order by no desc)
+  		where <![CDATA[rownum<=]]>${pageNum * onePageRecode} order by no asc)
+  		where <![CDATA[rownum<=]]><if test="pageNum==totalPage">${lastPageRecode}</if> 
+  		<if test="pageNum!=totalPage">${onePageRecode}</if> ORDER BY no DESC
+  	</select>
+  	<select id="memberInfo" resultType="com.seoulmate.home.vo.MemberVO">
+  		select m.profilepic, m.userid, m.userpwd, m.username, to_char(m.birth, 'YYYY-MM-DD') birth, m.tel, m.email, r.reportcnt, m.state from member m join  
+		(select userid, count(num) as reportcnt from report group by userid) r on m.userid=r.userid(+) and m.userid=#{param1}
+  	</select>
+  	<select id="membertotalRecord" parameterType="com.seoulmate.home.vo.PagingVO" resultType="int">
+  		select count(no) no from 
+  		(select * from 
+  		(select * from member 
+  		<if test='searchWord !=null and searchWord != ""'>where ${searchKey} like '%${searchWord}%'</if>)
+  		<if test='state !="" and state != null'>where state=#{state}</if>)
+  		<if test="grade == 1 or grade == 2">where grade=${grade}</if>
+  	</select>
+  	<update id="memberInfoSave" parameterType="com.seoulmate.home.vo.MemberVO">
+  		update member set profilePic=#{profilePic}, username=#{username}, tel=#{tel}, email=#{email}, 
+  		<choose>
+  			<when test='state==null'>
+  				state='일반'
+  			</when>
+  			<when test='state=="on"'>
+  				state='블랙'
+  			</when>
+  		</choose>
+  		where userid=#{userid} and birth=#{birth}
+  	</update>  	
+  	<select id="houseTotalRecode" parameterType="java.util.HashMap" resultType="int">
+  		SELECT count(no) FROM (SELECT * FROM (SELECT * FROM
+			(SELECT h.NO, h.userid, h.addr, h.HOUSESTATE, m.grade FROM HOUSEWRITE h JOIN MEMBER m ON h.userid=m.userid) 
+		<if test="pagingVO.searchWord != null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%'</if>)
+		<if test="hwVO.housestate != null and hwVO.housestate!=''">WHERE houseState='${hwVO.housestate}'</if> )
+  		<if test="hwVO.grade != null and hwVO.grade!=0">WHERE grade='${hwVO.grade}'</if> 
+  	</select>
+  	<select id="houseOnePageListSelect" parameterType="java.util.HashMap" resultType="com.seoulmate.home.vo.HouseWriteVO">
+  		SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM 
+			(SELECT h2.NO, h2.userid, h2.housename, h2.addr, h2.houseState, h2.reportNum, m.grade FROM 
+				(SELECT h.NO, h.userid, h.housename, h.addr, h.houseState, r.reportNum FROM HOUSEWRITE h join
+					(SELECT NO, count(num) AS reportNum FROM report GROUP BY NO) r ON h.NO=r.no(+)) h2 JOIN 
+						(SELECT userid, grade FROM MEMBER) m ON h2.userid=m.userid)
+					<if test="pagingVO.searchWord!=null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%'</if>)
+					<if test="hwVO.housestate != null and hwVO.housestate!=''">WHERE houseState='${hwVO.housestate}'</if> )
+					<if test="hwVO.grade != null and hwVO.grade!=0">WHERE grade='${hwVO.grade}'</if> )
+				ORDER BY NO DESC) 
+			where <![CDATA[rownum<=]]>${pagingVO.pageNum * pagingVO.onePageRecode} order by no asc)
+		where <![CDATA[rownum<=]]><if test="pagingVO.pageNum==pagingVO.totalPage">${pagingVO.lastPageRecode}</if> 
+  					<if test="pagingVO.pageNum!=pagingVO.totalPage">${pagingVO.onePageRecode}</if> ORDER BY no DESC
+  	</select>
+  	<select id="houseDetailInfoSelect" parameterType="com.seoulmate.home.vo.HouseWriteVO" resultType="com.seoulmate.home.vo.HouseWriteVO">
+  		SELECT * from	
+			(SELECT h2.NO, h2.userid, h2.pno, h2.housename, h2.addr,  h2.housepic1, h2.housepic2, h2.housepic3, h2.housepic4, h2.housepic5, 
+			h2.room, h2.bathroom, h2.searchPeople, h2.publicFacility, h2.writedate, h2.enddate, h2.houseState, h2.houseProfile, h2.reportNum, m.grade 
+			FROM  
+				(SELECT h.NO, h.userid, h.pno, h.housename ,h.addr, h.housepic1, h.housepic2, h.housepic3, h.housepic4, h.housepic5, 
+				h.room, h.bathroom, h.searchPeople, h.publicFacility, h.writedate, h.enddate, h.houseState, h.houseProfile, r.reportNum FROM HOUSEWRITE h 
+				join
+					(SELECT NO, count(num) AS reportNum FROM report GROUP BY NO) r ON h.NO=r.no(+) ) h2 JOIN 	
+		(SELECT userid, grade FROM MEMBER) m ON h2.userid=m.userid) WHERE NO=${no} AND userid='${userid}'
+  	</select>
+  	<select id="propensitySelect" parameterType="int" resultType="com.seoulmate.home.vo.PropensityVO">
+  		SELECT * FROM propensity WHERE pno=${param1}
+  	</select>
+  	<select id="houseRoomInfoSelect" parameterType="com.seoulmate.home.vo.HouseWriteVO" resultType="com.seoulmate.home.vo.HouseRoomVO">
+  		SELECT * FROM HOUSEROOM WHERE NO=${no} AND userid='${userid}'
+  	</select>
+  	<select id="houseListSelect" parameterType="java.util.HashMap" resultType="com.seoulmate.home.vo.HouseWriteVO">
+  		SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM
+  		(SELECT h2.NO, h2.userid, h2.housename, h2.addr, h2.houseState, h2.reportNum, m.grade 
+  		FROM 
+			(SELECT h.NO, h.userid, h.housename, h.addr, h.houseState, r.reportNum FROM HOUSEWRITE h 
+			join
+			(SELECT NO, count(num) AS reportNum FROM report GROUP BY NO) r ON h.NO=r.no(+)) h2 
+				JOIN 
+				(SELECT userid, grade FROM MEMBER) m ON h2.userid=m.userid)
+			<if test="pagingVO.searchWord!=null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%'</if>)
+			<if test="hwVO.housestate != null and hwVO.housestate!=''">WHERE houseState='${hwVO.housestate}'</if> )
+			<if test="hwVO.grade != null and hwVO.grade!=0">WHERE grade='${hwVO.grade}'</if> )
+			ORDER BY NO DESC
+  	</select>
+  	<select id="mateTotalRecode" parameterType="java.util.HashMap" resultType="int">
+  		SELECT count(no) FROM (SELECT * FROM (SELECT * FROM
+			(SELECT mate.no, mate.userid, mate.area, mate.matestate, m.grade FROM mateWrite mate JOIN MEMBER m ON mate.userid=m.userid) 
+		<if test="pagingVO.searchWord != null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%'</if>)
+		<if test="mwVO.matestate != null and mwVO.matestate!=''">WHERE matestate='${mwVO.matestate}'</if> )
+  		<if test="mwVO.grade != null and mwVO.grade!=0">WHERE grade='${mwVO.grade}'</if> 
+  	</select>
+  	<select id="mateOnePageListSelect" parameterType="java.util.HashMap" resultType="com.seoulmate.home.vo.MateWriteVO">
+	  	SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM 
+				(SELECT mate2.NO, m.username, mate2.userid, mate2.area, mate2.matestate, mate2.reportNum, m.grade FROM 
+					(SELECT mate.NO, mate.userid, mate.area, mate.matestate, r.reportNum FROM MATEWRITE mate join
+						(SELECT NO, count(num) AS reportNum FROM report GROUP BY NO) r ON mate.NO=r.no(+)) mate2 JOIN 
+							(SELECT userid, username, grade FROM MEMBER) m ON mate2.userid=m.userid)
+						<if test="pagingVO.searchWord!=null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%'</if>)
+						<if test="mwVO.matestate != null and mwVO.matestate!=''">WHERE matestate='${mwVO.matestate}'</if> )
+						<if test="mwVO.grade != null and mwVO.grade!=0">WHERE grade='${mwVO.grade}'</if> )
+					ORDER BY NO DESC) 
+				where <![CDATA[rownum<=]]>${pagingVO.pageNum * pagingVO.onePageRecode} order by no asc)
+			where <![CDATA[rownum<=]]><if test="pagingVO.pageNum==pagingVO.totalPage">${pagingVO.lastPageRecode}</if> 
+	  					<if test="pagingVO.pageNum!=pagingVO.totalPage">${pagingVO.onePageRecode}</if> ORDER BY no DESC
+  	</select>
+  	<select id="mateDetailInfoSelectMateWrite" parameterType="com.seoulmate.home.vo.MateWriteVO" resultType="com.seoulmate.home.vo.MateWriteVO">
+		SELECT * FROM (SELECT m.NO, m.userid, m.pno, m.area, m.matepic1, m.matepic2, m.matepic3, m.deposit, m.rent, m.enterdate, 
+						m.minstay, m.maxstay, m.writedate, m.enddate, m.mateState, m.mateProfile, r.reportNum FROM MATEWRITE m 
+		join
+		(SELECT NO, count(num) AS reportNum FROM report GROUP BY NO) r ON m.NO=r.no(+) ) WHERE NO=${no} AND userid='${userid}'
+  	</select>
+  	<select id="mateDetailInfoSelectMember"  parameterType="String" resultType="com.seoulmate.home.vo.MemberVO">
+  		SELECT * FROM MEMBER WHERE userid='${param1}'
+  	</select>
+  	<select id="mateListSelect" parameterType="java.util.HashMap" resultType="com.seoulmate.home.vo.MateWriteVO">
+		SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * 
+		FROM 
+			(SELECT mate2.NO, m.username, mate2.userid, mate2.area, mate2.matestate, mate2.reportNum, m.grade 
+			FROM 
+				(SELECT mate.NO, mate.userid, mate.area, mate.matestate, r.reportNum FROM MATEWRITE mate 
+				join
+					(SELECT NO, count(num) AS reportNum FROM report GROUP BY NO) r ON mate.NO=r.no(+)) mate2 
+					JOIN 
+					(SELECT userid, username, grade FROM MEMBER) m ON mate2.userid=m.userid)
+				<if test="pagingVO.searchWord!=null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%'</if>)
+				<if test="mwVO.matestate != null and mwVO.matestate!=''">WHERE matestate='${mwVO.matestate}'</if> )
+				<if test="mwVO.grade != null and mwVO.grade!=0">WHERE grade='${mwVO.grade}'</if> ) order by no desc
+  	</select>
+  	<select id="payTotalRecode" parameterType="java.util.HashMap" resultType="int">
+  		select count(no) from pay 
+  		<if test="pagingVO.searchWord != null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%' <if test="payVO.selectStartDate!=null and payVO.selectStartDate!='' and payVO.selectEndDate!=null and payVO.selectEndDate!=''">and</if> </if>
+  		<if test="payVO.selectStartDate!=null and payVO.selectStartDate!='' and payVO.selectEndDate!=null and payVO.selectEndDate!=''"> 
+  			<if test="pagingVO.searchWord == null or pagingVO.searchWord ==''"> where </if>
+  			<if test="payVO.selectYearMonthDate=='일별'"> payStart BETWEEN to_date('${payVO.selectStartDate} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date('${payVO.selectEndDate} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')</if>
+  			<if test="payVO.selectYearMonthDate=='월별'"> payStart BETWEEN to_date('${payVO.selectStartDate}-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${payVO.selectEndDate}', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS')</if>
+  			<if test="payVO.selectYearMonthDate=='년별'"> payStart BETWEEN to_date('${payVO.selectStartDate}-1-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${payVO.selectEndDate}-12', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS')</if>
+  		</if>
+  	</select>
+  	<select id="payOnePageListSelect" parameterType="java.util.HashMap"  resultType="com.seoulmate.home.vo.PayVO" >
+  		SELECT no, userid, username, to_char(payStart, 'YYYY-MM-DD') as payStart, to_char(payEnd, 'YYYY-MM-DD') as payEnd, payMethod, refund, merchant_uid, grade FROM 
+  			(select * from (select * from (select * from 
+				(SELECT pay.no, pay.userid, pay.username, pay.payStart, pay.payEnd, pay.payMethod, pay.refund, pay.merchant_uid, m.grade 
+				FROM pay pay, (SELECT userid, grade FROM member) m WHERE pay.userid = m.userid)
+  					<if test="pagingVO.searchWord != null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%' <if test="payVO.selectStartDate!=null and payVO.selectStartDate!='' and payVO.selectEndDate!=null and payVO.selectEndDate!=''">and</if></if>
+  					<if test="payVO.selectStartDate!=null and payVO.selectStartDate!='' and payVO.selectEndDate!=null and payVO.selectEndDate!=''"> 
+  						<if test="pagingVO.searchWord==null or pagingVO.searchWord == '' "> where</if>
+			  			<if test="payVO.selectYearMonthDate=='일별'"> payStart BETWEEN to_date('${payVO.selectStartDate} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date('${payVO.selectEndDate} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')</if>
+			  			<if test="payVO.selectYearMonthDate=='월별'"> payStart BETWEEN to_date('${payVO.selectStartDate}-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${payVO.selectEndDate}', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS')</if>
+			  			<if test="payVO.selectYearMonthDate=='년별'"> payStart BETWEEN to_date('${payVO.selectStartDate}-1-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${payVO.selectEndDate}-12', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS')</if>
+  					</if> 
+  					<if test="payVO.selectStartDate==null and payVO.selectStartDate=='' and payVO.selectEndDate==null and payVO.selectEndDate==''">)</if>
+  					order by ${payVO.orderCondition} <if test="payVO.orderUpDown=='desc'"> desc</if><if test="payVO.orderUpDown=='asc'"> asc</if> )
+  				where <![CDATA[rownum<=]]>${pagingVO.pageNum * pagingVO.onePageRecode} order by ${payVO.orderCondition} <if test="payVO.orderUpDown=='desc'"> asc</if><if test="payVO.orderUpDown=='asc'"> desc</if>)
+  			where <![CDATA[rownum<=]]><if test="pagingVO.pageNum==pagingVO.totalPage">${pagingVO.lastPageRecode}</if> 
+  					<if test="pagingVO.pageNum!=pagingVO.totalPage">${pagingVO.onePageRecode}</if> ORDER BY ${payVO.orderCondition} <if test="payVO.orderUpDown=='desc'">desc</if><if test="payVO.orderUpDown=='asc'">asc</if>)
+  	</select>
+  	<select id="payListSelect" parameterType="java.util.HashMap" resultType="com.seoulmate.home.vo.PayVO">
+  	select no, userid, username, to_char(payStart, 'YYYY-MM-DD') as payStart, to_char(payEnd, 'YYYY-MM-DD') as payEnd, payMethod, refund, grade from 
+		(SELECT pay.no, pay.userid, pay.username, pay.payStart, pay.payEnd, pay.payMethod, pay.refund, m.grade 
+		FROM 
+		pay pay, (SELECT userid, grade FROM member) m WHERE pay.userid = m.userid)
+  			<if test="pagingVO.searchWord != null and pagingVO.searchWord != '' ">where ${pagingVO.searchKey} like '%${pagingVO.searchWord}%' <if test="payVO.selectStartDate!=null and payVO.selectStartDate!='' and payVO.selectEndDate!=null and payVO.selectEndDate!=''">and</if></if>
+  			<if test="payVO.selectStartDate!=null and payVO.selectStartDate!='' and payVO.selectEndDate!=null and payVO.selectEndDate!=''"> 
+  				<if test="pagingVO.searchWord==null or pagingVO.searchWord == '' "> where</if>
+			  	<if test="payVO.selectYearMonthDate=='일별'"> payStart BETWEEN to_date('${payVO.selectStartDate} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date('${payVO.selectEndDate} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')</if>
+			  	<if test="payVO.selectYearMonthDate=='월별'"> payStart BETWEEN to_date('${payVO.selectStartDate}-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${payVO.selectEndDate}', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS')</if>
+			  	<if test="payVO.selectYearMonthDate=='년별'"> payStart BETWEEN to_date('${payVO.selectStartDate}-1-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${payVO.selectEndDate}-12', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS')</if>
+  			</if> 
+  			<if test="payVO.selectStartDate==null and payVO.selectStartDate=='' and payVO.selectEndDate==null and payVO.selectEndDate==''">)</if>
+  			order by no desc
+  	</select>
+  	
+  	<select id="salesList" parameterType="com.seoulmate.home.vo.PayVO"  resultType="com.seoulmate.home.vo.PayVO">
+  		SELECT <if test="msg!='total'">payStart ,</if> sum(amount) AS amount, sum(amountCard) AS amountCard, sum(amountCash) AS amountCash,
+  		sum(amountRefund) as amountRefund
+  		from
+  		<if test="msg=='year'">(SELECT to_char(payStart, 'YYYY') AS PAYSTART,  AMOUNT , amountCard, amountCash, amountRefund from </if> 
+  		<if test="msg=='month'">(SELECT to_char(payStart, 'YYYY-MM') AS PAYSTART,  AMOUNT , amountCard, amountCash, amountRefund from </if> 
+  		<if test="msg=='date'">(SELECT to_char(payStart, 'YYYY-MM-DD') AS PAYSTART,  AMOUNT , amountCard, amountCash, amountRefund from </if> 
+  		(SELECT PAYSTART, AMOUNT, amountCard, amountCash, amountRefund
+  		from 
+  			(SELECT p.payStart, p.amount, p.amountCard, p.amountRefund, cash.amountCash 
+			FROM 
+				(SELECT pay.payStart, pay.amount , pay.amountRefund, card.amountCard 
+				FROM 
+					(SELECT pp.payStart, pp.amount, re.amountRefund
+					FROM 
+						pay pp
+					join 
+						(SELECT payStart, amount as amountRefund FROM pay WHERE refund is not null) re
+					on 
+						pp.payStart=re.payStart(+)) pay 
+				join 
+					(SELECT payStart, amount AS amountCard FROM pay WHERE payMethod='card') card 
+				on 
+					pay.payStart=card.payStart(+)) p 
+			join 
+				(SELECT payStart, amount AS amountCash FROM pay WHERE payMethod!='card') cash 
+			on 
+				p.payStart=cash.payStart(+) )
+			<if test="selectStartDate!=null and selectStartDate!='' and selectEndDate!=null and selectEndDate!=''"> 
+				WHERE
+		  		<if test="selectYearMonthDate=='일별'"> payStart BETWEEN to_date('${selectStartDate} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date('${selectEndDate} 23:59:59', 'YYYY-MM-DD HH24:MI:SS') </if>
+		  		<if test="selectYearMonthDate=='월별'"> payStart BETWEEN to_date('${selectStartDate}-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${selectEndDate}', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS') </if>
+		  		<if test="selectYearMonthDate=='년별'"> payStart BETWEEN to_date('${selectStartDate}-1-1 00:00:00', 'YYYY-MM-DD HH24:MI:SS') and to_date(to_char(LAST_DAY(to_date('${selectEndDate}-12', 'YYYY-MM')), 'YYYY-MM-DD')||' 23:59:59' ,'YYYY-MM-DD HH24:MI:SS') </if>
+  			 </if> order by payStart asc) <if test="msg!='total'">) GROUP BY payStart ORDER BY payStart</if> 
+  	</select>
+  	<select id="salesUserList" parameterType="com.seoulmate.home.vo.PayVO"  resultType="com.seoulmate.home.vo.PayVO">
+  		select no, userid, username, amount, to_char(paystart,'YYYY-MM-DD') as payStart, to_char(payend,'YYYY-MM-DD') as payEnd, payMethod, refund from pay 
+  		where to_char(paystart, 'YYYY-MM-DD') LIKE '%${param1}%'
+  	</select>
+  	<insert id="reportInsert" parameterType="com.seoulmate.home.vo.ReportVO">
+  		insert into report(num, no, category, reportid, userid, reportcategory, reportcontent)
+  		values(reportsq.nextval, ${no}, #{category}, #{reportid}, #{userid}, #{reportcategory}, #{reportcontent})
+  	</insert>
+  	<select id="reportTotalRecord" parameterType="com.seoulmate.home.vo.PagingVO" resultType="com.seoulmate.home.vo.ReportVO">
+  		select * from (select * from (select * from 
+  		(select * from 
+  		(select * from 
+  		(select r.num, r.userid, r.reportid, r.category, r.no, r.reportdate, r.state, m.state bState from report r join member m on r.userid = m.userid 
+  		<if test='searchKey !=null and searchWord != null and searchKey != "" and searchWord !=""'>where r.${searchKey} like '%${searchWord}%'</if>)
+  		<if test="grade != null and grade !='' ">where category=#{grade} </if>)
+  		<if test='state != null and state !="" '>where state=#{state}</if>)
+  		order by num desc)
+  		where <![CDATA[rownum<=]]>${pageNum * onePageRecode} order by num asc)
+  		where <![CDATA[rownum<=]]><if test="pageNum==totalPage">${lastPageRecode}</if>
+  		<if test="pageNum!=totalPage">${onePageRecode}</if> ORDER BY num DESC
+  	</select>
+  	<select id="reportInfo" resultType="com.seoulmate.home.vo.ReportVO">
+  		select r.num, r.no, r.category, r.userid, reportid, reportcategory, reportcontent, reportdate, r.state, 
+  		<if test="param2 != '채팅' ">
+  			<if test="param2 != '하우스' and param2 != '메이트'">
+  				c.state vState,
+  			</if>
+  			<if test="param2 == '메이트'">
+  				c.matestate vState,
+  			</if>
+  			<if test="param2 == '하우스'">
+  				c.housestate vState,
+  			</if>
+  		</if>
+  		m.state bState, m.profilepic profilepic1
+  		from report r join 
+  		<if test="param2 == '하우스'">housewrite c on r.no=c.no </if>
+   		<if test="param2 == '메이트'">matewrite c on r.no=c.no </if>
+   		<if test="param2 == '커뮤니티'">community c on r.no=c.no </if>
+   		<if test="param2 == '댓글'">communityreply c on r.no=c.num</if>
+   		<if test="param2 == '채팅'">chatroom c on r.no=c.no</if>
+   		join member m on m.userid=r.userid where r.num=${param1}
+  	</select>
+  	<select id="reportCategorySelect" resultType="String">
+  		select DISTINCT dong from zipcode where dong like '%${param1}%'
+  	</select>
+  	<update id="allStateUdate">
+  		update 
+  		<if test="param3 == '하우스'">housewrite set 
+  			<if test="param4 == '처리완료'">houseshow='비공개' </if>
+  			<if test="param4 == '허위신고'">househow ='공개' </if>
+  			where no=#{param1} and userid=#{param2}	
+  		</if>
+  		<if test="param3 == '메이트'">matewrite set 
+			<if test="param4 == '처리완료'">mateshow='비공개' </if>
+  			<if test="param4 == '허위신고'">mateshow='공개' </if>
+  			where no=#{param1} and userid=#{param2}	
+  		</if>
+  		<if test="param3 == '커뮤니티'">
+  			community set 
+			<if test="param4 == '처리완료'">state='비공개' </if>
+  			<if test="param4 == '허위신고'">state='공개' </if>
+  			where no=#{param1} and userid=#{param2}
+  		</if>
+  		<if test="param3 == '댓글'">
+  			communityreply set 
+			<if test="param4 == '처리완료'">state='비공개' </if>
+  			<if test="param4 == '허위신고'">state='공개' </if>
+  			where num=#{param1} and userid=#{param2}
+  		</if>
+  	</update>
+  	<update id="reportStateUpdate">
+  		update report set state=#{param2} where num=${param1}
+  	</update>
+  	<select id="checkReportCnt" resultType="int">
+		select count(state) from report where userid=#{param1} and state='처리완료'
+  	</select>
+  	<update id="addBlacklist">
+  		update member set state='블랙' where userid=#{param1}
+   	</update>
+   	<update id="removeBlacklist">
+   		update member set state='일반' where userid=#{param1} 
+   	</update>
+   	<select id="getState" resultType="String">
+   		select state vState from 
+   		<if test="param1 == '하우스'">housewrite where no=${param2}</if>
+   		<if test="param1 == '메이트'">matewrite where no=${param2}</if>
+   		<if test="param1 == '커뮤니티'">community where no=${param2}</if>
+   		<if test="param1 == '댓글'">communityreply where num=${param2}</if>
+   	</select>
+   	<select id="getNumFromReport" resultType="String">
+   		select num from report where no=${param1}
+   	</select>
+   	<select id="reportRecordCnt" parameterType="com.seoulmate.home.vo.PagingVO" resultType="int">
+   		select count(num) num from
+   		(select * from
+   		(select * from report
+   		<if test="searchWord!=null and searchWord != '' ">where ${searchKey} like '%${searchWord}%'</if>)
+		<if test="grade != null and grade != '' "> where category=#{grade}</if>)
+		<if test="state != null and state != '' "> where state=#{state}</if>
+   	</select>
+   	<select id="faqAllRecord" resultType="com.seoulmate.home.vo.FaqVO">
+   		SELECT no, subject, content, userid, to_char(writedate, 'YYYY-MM-DD HH24:MI') writedate FROM faq order by no desc
+   	</select>
+   	<select id="faqInfo" parameterType="int" resultType="com.seoulmate.home.vo.FaqVO">
+   		SELECT NO, subject, content, userid FROM FAQ WHERE NO=#{param1}
+   	</select>
+   	<insert id="faqInsert" parameterType="com.seoulmate.home.vo.FaqVO">
+   		insert into faq values(fsq.nextval, #{subject}, #{content}, #{userid}, sysdate)
+   	</insert>
+   	<update id="faqUpdate" parameterType="com.seoulmate.home.vo.FaqVO">
+   		update faq set subject=#{subject}, content=#{content} where no=#{no}
+   	</update>
+   	<select id="contactAllRecord" parameterType="com.seoulmate.home.vo.PagingVO" resultType="com.seoulmate.home.vo.ContactVO">
+   		select * from
+		   (select * from
+		        (select * from 
+		            (select * from 
+		                (select * from 
+		                    (select q.no, q.userid, q.username, q.email, category, qcontent, acontent, qdate, adate, q.state state, m.state mState
+   							from qna q join member m on q.userid=m.userid 
+		                    <if test="searchKey != null and searchWord != null and searchKey != '' and searchKey != '' ">where q.${searchKey} like '%${searchWord}%'</if>)
+		                <if test="grade != null and grade != '' ">where category=#{grade}</if>) 
+		            <if test="state != null and state != '' ">where state=#{state}</if>)
+		        order by no desc)
+		    where <![CDATA[rownum<=]]>${pageNum * onePageRecode} order by no asc)
+		where <![CDATA[rownum<=]]><if test="pageNum == totalPage">${lastPageRecode}</if>
+		<if test="pageNum != totalPage">${onePageRecode}</if> order by no desc
+   	</select>
+   	<select id="contactRecordCnt" parameterType="com.seoulmate.home.vo.PagingVO" resultType="int"> 
+		select count(no) no from
+		(select * from
+		(select * from qna
+		<if test="searchWord!=null and searchWord != '' ">where ${searchKey} like '%${searchWord}%'</if>)
+		<if test="grade != null and grade != '' "> where category=#{grade}</if>)
+		<if test="state != null and state != '' "> where state=#{state}</if>  		
+   	</select>
+   	<select id="contactInfo" resultType="com.seoulmate.home.vo.ContactVO">
+   		select * from (select q.no, q.userid, q.username, q.email, category, qcontent, acontent, qdate, adate, q.state, m.state mState
+   		from qna q join member m on q.userid=m.userid )where no=${param1}
+   	</select>
+   	<update id="contactUpdate" parameterType="com.seoulmate.home.vo.ContactVO">
+   		update qna set aContent=#{aContent}, state='답변완료', adate=sysdate where no=${no}
+   	</update>
+   	<!-- Dashboard -->
+   	<select id="todayReportNum" resultType="int">
+   		select count(category) from
+		    (select * from
+		        (select category, to_char(reportdate, 'YYYY-MM-DD') reportdate from report)
+		    <if test="param1 == '하우스' "> where category='하우스'</if>
+		    <if test="param1 == '메이트'"> where category='메이트'</if>
+		    <if test="param1 == '커뮤니티' "> where category='커뮤니티' or category='댓글'</if>
+		    )
+		where reportdate = to_char(sysdate, 'YYYY-MM-DD')
+   	</select>
+   	<select id="todayNum" resultType="int">
+   		select count(no) from 
+   		<if test="param1 == '문의' "> qna where to_char(qdate</if>
+   		<if test="param1 == '프리미엄' "> pay where to_char(paystart</if>
+   		, 'YYYY-MM-DD') = to_char(sysdate, 'YYYY-MM-DD')
+   	</select>
+   	<select id="salesAmount" resultType="String">
+   		select to_char(sum(amount), '999,999,999') from pay where to_char(paystart, 'YYYY-MM-DD')= to_char(sysdate, 'YYYY-MM-DD')
+   	</select>
+   	<update id="faqDel" parameterType="com.seoulmate.home.vo.FaqVO">
+   		delete from faq where no=#{no}
+   	</update>
+   	<select id="endHouseList" resultType="String">
+   		SELECT NO FROM housewrite WHERE housestate='모집중' AND <![CDATA[enddate-sysdate<0]]>
+   	</select>
+   	<select id="endMateList" resultType="String">
+   		SELECT NO FROM matewrite WHERE matestate='모집중' AND <![CDATA[enddate-sysdate<0]]>
+   	</select>
+   	<update id="endHouse">
+   		UPDATE housewrite SET housestate='기간 만료' WHERE NO=#{param1}
+   	</update>
+   	<update id="endMate">
+   		UPDATE matewrite SET matestate='기간 만료' WHERE NO=#{param1}
+   	</update>
+   	<select id="getHouseAddr" resultType="int">
+   		select count(addr) from houseWrite where addr like '%${param1}%'
+   	</select>
+   	<select id="getMemberGrade" parameterType="int" resultType="int">
+   		select count(no) from member where grade=${param1}
+   	</select>
+   	<select id="getProfilePic2" resultType="String">
+   		select profilepic from member where userid=#{param2}
+   	</select>
+   <update id="housePicUpdate" parameterType="java.util.HashMap"  >
+   		update housewrite set 
+   		<if test="housepic1 != '10000'"> housepic1='${housepic1}'</if>
+   		<if test="housepic2 != '10000'">, housepic2='${housepic2}'</if>
+   		<if test="housepic2 == '10000'">, housepic2 = null</if>
+   		<if test="housepic3 != '10000'">, housepic3='${housepic3}'</if>
+   		<if test="housepic3 == '10000'">, housepic3 = null</if>
+   		<if test="housepic4 != '10000'">, housepic4='${housepic4}'</if>
+   		<if test="housepic4 == '10000'">, housepic4 = null</if>
+   		<if test="housepic5 != '10000'">, housepic5='${housepic5}'</if>
+   		<if test="housepic5 == '10000'">, housepic5 = null</if>
+   		where pno=${pno}
+   </update>
+   <update id="matePicUpdate" parameterType="java.util.HashMap"  >
+   		update matewrite set 
+   		<if test="matePic1 != '10000'"> matePic1='${matePic1}'</if>
+   		<if test="matePic2 != '10000'">, matePic2='${matePic2}'</if>
+   		<if test="matePic2 == '10000'">, matePic2 = null</if>
+   		<if test="matePic3 != '10000'">, matePic3='${matePic3}'</if>
+   		<if test="matePic3 == '10000'">, matePic3 = null</if>
+   		where pno=${pno}
+   </update>
+   <update id="houseStateUpdate" parameterType="com.seoulmate.home.vo.HouseWriteVO">
+   		update housewrite set housestate='${housestate}' where pno=${pno}
+   </update>
+   <update id="mateStateUpdate" parameterType="com.seoulmate.home.vo.MateWriteVO">
+   		update matewrite set matestate='${matestate}' where pno=${pno}
+   </update>
+   <select id="housepicSelect" parameterType="int" resultType="com.seoulmate.home.vo.HouseWriteVO" >
+		select housepic1, housepic2, housepic3, housepic4, housepic5 from housewrite where pno=${param1}
+   </select>
+   <select id="matepicSelect" parameterType="int" resultType="com.seoulmate.home.vo.MateWriteVO" >
+		select matePic1, matePic2, matePic3 from matewrite where pno=${param1}
+   </select>
+</mapper>
+
+
+
+

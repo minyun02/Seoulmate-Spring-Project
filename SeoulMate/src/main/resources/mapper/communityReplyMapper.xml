@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.seoulmate.home.dao.CommunityReplyDAO">
+ 	<select id="replyList" resultType="com.seoulmate.home.vo.CommunityReplyVO">
+ 		select num, c.userid, content, writedate, c.state, m.profilepic profilePic
+ 		from communityReply c join member m on c.userid=m.userid where c.no=${param1} order by num
+ 	</select>
+ 	<insert id="replyInsert">
+ 		insert into communityreply(num, no, userid, content, ip) 
+ 		values(comreplysq.nextval, #{no}, #{userid}, #{content}, #{ip})
+ 	</insert>
+ 	<update id="replyUpdate">
+ 		update communityreply set content=#{content}, writedate=sysdate where no=${no} and num=${num}
+ 	</update>
+ 	<delete id="replyDel">
+ 		delete from communityreply where num=${param1} and userid=#{param2}
+ 	</delete>
+ 	<select id="replyOriNum" resultType="String">
+ 		select no from communityReply where num=${param1}
+ 	</select>
+ </mapper>

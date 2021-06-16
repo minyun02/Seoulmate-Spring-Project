@@ -1,0 +1,109 @@
+@charset "UTF-8";
+/* memberForm */
+.form_box li{margin:10px 0;}
+.form_box.choice li > label{width:150px;}
+#mem{margin-top:50px;}
+#mem>li>#userid{width:280.5px;}
+#mem>li>#userpwd, #mem>li>#userpwd2, #mem>li>#username, #mem>li>#birth{width:70%;}
+select{width:90px; margin:0 10px;}
+#tel1, #tel2, #tel3, #area1, #area2, #area3{width:117.52px;}
+#emailid, #emaildomain{width:125px;}
+#emailCheck{width:284px;}
+#idCheck{width:122.81px; text-align: center;}
+span{line-height: 47px;}
+.multi{text-align:center; width:13.73px;}
+#memDiv1>#mem>li>label{width:150px;}
+#memDiv1>#mem>li>.checks>label{width:120px;}
+#memDiv3>ul>li>label, #memDiv4>ul>li>label, #memDiv5>ul>li>label, #memDiv6>ul>li>label, #memDiv7>ul>li>label{width:170px;}
+.checks>label{width:120px;}
+.checks.checkbox>label{width:170px;}
+#a1>select, #a2>select, #a3>select{width:200px;}
+#memDiv2, #memDiv3, #memDiv4, #memDiv5, #memDiv6, #memDiv7, .houseChoice, .mateChoice, #hopeChoice{display:none;}
+.half{float:left; width:50%; line-height:47px; margin:40px 0;}
+.half>.checks>.d_title{padding:0 10px;}
+#memDiv3>.title_wrap>.s_title, #memDiv4>.title_wrap>.s_title, #memDiv5>.title_wrap>.s_title
+, #memDiv6>.title_wrap>.s_title, #memDiv7>.title_wrap>.s_title{margin:40px 0;}
+#memDiv3>.form_box.choice li > label, #memDiv5>.form_box.choice li > label
+, #memDiv6>.form_box.choice li > label, #memDiv7>.form_box.choice li > label{width:170px;}
+#memNext1{margin-top:50px;}
+#proli{height:150px;}
+.profile_div{margin:5px 0 0 14px;}
+.profile_img{width:155px; height:111px;}
+.form_box>li>input[type=date]{width:213.73px;}
+#idPopup>.pup_form>.pup_body{padding:10px 25px 10px 25px; height:240px;}
+#idPopup>.pup_form>.pup_body>.s_title{margin:20px 0;}
+#distinct{margin:0 0 10px 60px; }
+.center{text-align:center;}
+#setId{border-radius: 20px; width:142px; height: 40px; line-height: 40px;
+	box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%); display: inline-block; margin:0 auto;}
+#profilePic{margin:0;}
+
+/* memberEdit */
+#userpwdCheck{width:250px;}
+#memberEditForm, #memberFindId, #memberFindPwd, #memberExitForm{width:400px; margin:0 auto;}
+#memberEditForm>label, #memberFindId>label, #memberFindPwd>label , #memberExitForm>label{width: 19%;display: inline-block;}
+#memberEditForm>input, #memberFindId>input, #memberExitForm>input, #useridCheck, #memberFindPwd>input{width: 75%;margin-left:5%;}
+#area1Edit, #area2Edit, #area3Edit{width:284.2px;}
+#area1Btn, #area2Btn, #area3Btn{width:122.8px; text-align:center; display:none;} /* display */
+/* #area1Div, #area2Div, #area3Div{display:none;} */
+#gu1Edit, #dong1Edit, #gu2Edit, #dong2Edit, #gu3Edit, #dong3Edit{width:200px; float:left;}
+
+/* memberFind */
+#idEmailCheck, #pwdEmailCheck{margin-top:40px;}
+#idFindBtn{height:50px;}
+#FindIdBtn{margin-bottom:40px;}
+.title_wrap>.s_title.margin-bottom50.margin-top50{margin:50px 0;}
+.wrap>.member_wrap>hr{margin:80px 0 0 0;}
+#pwdEmailCheckBtn{width:100%; margin-top:40px;}
+
+/* memberEditForm */
+#mem>li>#Edituserid{width:420px;}
+input[type=text]:readonly {background:#ddd;}
+.editDiv>p{margin:0 0 60px 0; font-size:2rem;}
+.remove_icon{margin:7px 0 0 5px; width:20px; height:20px;}
+#emailBtn, #emailCheckBtn{display:none;}
+
+/* memberExit */
+#memberExitForm>input[type=text]{width:250px;}
+.center{text-align:center;}
+.center>button{width: 100%;margin-top: 40px;}
+
+/* memberProEdit */
+#proUl, #delUl{height:50px;}
+#proUl>li, #delUl>li{/* float:right; */ display:inline-block;}
+/* .priDiv1>div>.s_title, .priDiv2>div>.s_title, .priDiv3>div>.s_title{ */
+/* 	margin:40px 0; */
+/* } */
+#proId .s_title{
+	margin:40px 0;
+}
+.amm{
+	width:120px !important;	
+}
+
+/* #proTitle{margin-bottom:30px;} */
+#proId>#memDiv3{display:block;}
+#proDiv2, #proDiv3, #proDiv4, #proDiv5{display:none;}
+#Choice>p{display:none;}
+/* .memDiv3>.form_box.choice li > div >label{width:120px;}
+#memDiv3>.title_wrap>.s_title, #proDiv2>.title_wrap>.s_title, #proDiv3>.title_wrap>.s_title
+, #proDiv4>.title_wrap>.s_title, #proDiv5>.title_wrap>.s_title{margin:40px 0;}
+#proDiv3>.form_box.choice>li>.checks>label{width:160px;} */
+.member_wrap>.title_wrap>.s_margin{margin:0 0 40px 0;}
+.member_wrap>.title_wrap>.s_margin#proUl,.member_wrap>.title_wrap>.s_margin#delUl{height: auto;}
+.member_wrap>.title_wrap>.s_marginTop{margin:40px 0 0 0;}
+.member_wrap>.title_wrap.p_center{width:600px; text-align:center;}
+
+/* proEditHouseForm */
+#proDiv1>ul>li>label, #proDiv2>ul>li>label, #proDiv3>ul>li>label, #proDiv4>ul>li>label, #proDiv5>ul>li>label{width:170px;}
+#mateChoice{margin-bottom:10px;}
+#hopeChoice{margin-bottom:10px;}
+/* #Choice{margin-bottom:50px;} */
+
+
+/* memberManagement */
+#memManage{
+	margin-left:15%;
+	padding:2% 0 0 2%;
+}
+ul, li{margin:0; padding:0; list-style-type:none !important;}

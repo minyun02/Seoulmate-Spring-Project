@@ -1,0 +1,146 @@
+@charset "UTF-8";
+
+/* 마이페이지 - 결제내역 페이지payDetailList  */
+#payYearSelect{width: 150px; height: 30px; margin: 40px 0px 10px 0px;}
+
+/* 하우스&메이트 관리 => 찜목록 => 리스트 div */
+.myHouseMateList{width: 100%; overflow: auto;  min-width: 930px;} 
+
+/* (공통) 하우스&메이트 관리 한 블록*/
+#myPage_HouseAndMate_Content{min-width: 870px; }
+.myPage_HouseAndMate_oneBlock{height: 260px; width: 97%; 
+	border-radius: 20px; box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%); margin: 20px 10px;}
+
+/* (공통) 하우스&메이트 관리 => 이미지 */
+.myPage_HouseAndMate_Img{position: relative; float: left;}
+.myPage_HouseAndMate_Img>a{padding: 0; margin: 0; box-shadow: inherit; height:150px;}
+.myPage_HouseAndMate_Img>a>img{width: 250px; height: 250px; border-radius: 20px; margin: 5px 5px;}
+.myPage_HouseAndMate_Img>div{border-radius: 20px; background-color: #13a89ec2; width: 70px; height: 70px; 
+	text-align: center; font-size: 1.2em; padding-top: 5px; color: #fff; font-weight: 600;
+	position: absolute; top:10px; left: 10px; }
+.myPage_HouseAndMate_Img>div>span{display:inline-block; font-size: 1.5em; height: 30px; line-height: 30px;}
+
+/* 하우스&메이트 관리 => 리스트별 디자인 */
+.myPage_HouseAndMate_Info{float:left; width: 300px; margin: 25px 0px 0px 30px; height: 250px;}
+.myPage_HouseAndMate_Info>li{height: 15%;}
+.myPage_HouseAndMate_Info>li:first-of-type{height: 30%; font-size: 1.5em; font-weight: bold; margin-top: 10px;
+	font-family: SsangmunDong; }
+.myPage_HouseAndMate_Info>li:nth-of-type(2){ }
+.myPage_HouseAndMate_Info>li:last-of-type{height: 30%; padding-top: 10px;}
+
+/* 하우스&메이트 관리 => 간단 정보 */
+.myPage_HouseAndMate_Mate, .myPage_HouseAndMate_House{height: 40px; line-height: 40px;}
+.myPage_HouseAndMate_Mate>li, .myPage_HouseAndMate_House>li{display: inline-block; border-radius: 40px; }
+.myPage_HouseAndMate_Mate>li>p, .myPage_HouseAndMate_House>li>p{width: 40px; border-radius: 20px; margin-left: 40px; 
+	text-align: center; line-height: 40px; height: 40px;}
+.myPage_HouseAndMate_House>li:first-of-type{background: url(../img/comm/ico_room.png) no-repeat 0px 0px; 
+	background-color: #f0edf8; }
+.myPage_HouseAndMate_Mate>li:first-of-type{background: url(../img/comm/ico_mate.png) no-repeat 0px 0px; 
+	background-color: #f0edf8; }
+.myPage_HouseAndMate_Mate>li:first-of-type>p, .myPage_HouseAndMate_House>li:first-of-type>p{color:#4f399d; 
+	background-color: #e9e5f6;}
+.myPage_HouseAndMate_House>li:nth-of-type(2) {background: url(../img/comm/ico_room.png); background-repeat:repeat-y; 
+	background-position-y: 80px; background-color: #e8f2fb;  }
+.myPage_HouseAndMate_Mate>li:nth-of-type(2) {background: url(../img/comm/ico_mate.png); background-repeat:repeat-y; 
+	background-position-y: 80px; background-color: #e8f2fb;  }
+.myPage_HouseAndMate_Mate>li:nth-of-type(2)>p, .myPage_HouseAndMate_House>li:nth-of-type(2)>p{color:#355c79; 
+	background-color: #d8ecfe;}
+.myPage_HouseAndMate_House>li:nth-of-type(3) {background: url(../img/comm/ico_room.png); background-repeat:repeat-y; 
+	background-position-y: 40px; background-color: #ffe5e1;  }
+.myPage_HouseAndMate_Mate>li:nth-of-type(3) {background: url(../img/comm/ico_mate.png); background-repeat:repeat-y; 
+	background-position-y: 40px; background-color: #ffe5e1;  }
+.myPage_HouseAndMate_Mate>li:nth-of-type(3)>p, .myPage_HouseAndMate_House>li:nth-of-type(3)>p{color:#d05567; 
+	background-color: #ffd7d1;}
+
+/* 하우스&메이트 관리 => 버튼 들어갈 박스 */
+.myPage_HouseAndMate_Btn>a , .myPage_HouseAndMate_LikeMarker_Btn>a{height: 40px; line-height: 40px; font-size: 1.2em; margin-top: 10px;}
+.myPage_HouseAndMate_Btn{
+	 float:left; min-width: 300px; margin-top: 100px;}
+.myPage_HouseAndMate_LikeMarker_Btn{float: left; margin-top: 100px; min-width: 300px;}
+@media screen and (max-width:1680px){
+	.myPage_HouseAndMate_Btn{width: 500px; margin-top: 75px;}
+}
+@media screen and (max-width:1549px){
+	.myPage_HouseAndMate_Btn{width: 400px; margin-top: 75px; }
+}
+@media screen and (max-width:1420px){
+	.myPage_HouseAndMate_Btn{width: 300px; margin-top: 50px; }
+}
+#inviteInsertBtn{height: 40px; line-height: 40px; margin-left: 10px; position: absolute;}
+#invitetTitle{font-size: 1.2em; font-weight: bold; margin-bottom: 10px;}
+#inviteHousename{margin-right: 10px; width: 200px;}
+/*  하우스&메이트 관리 => 팝업 */
+.myPage_HouseAndMate_Popup_FullScreen{width: 100%; height: 100%; background-color: #ddd; opacity: 0.5;
+	position: fixed; top:0; left: 0; z-index: 10;}
+.myPage_HouseAndMate_Popup {width: 610px; height: 600px; border-radius: 20px; position: fixed; left: 30%; 
+	top: 15%; box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%); background-color: #fff;
+	z-index: 11; }
+.alert_pop{width: 350px; height: 200px; background-color: #fff; border-radius: 20px;
+	position: absolute; top:20%; left:40%; box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%); z-index: 12; }
+.alert_pop_Title{padding-left: 20px; width: 100%; height: 30px; line-height: 30px; 
+	background-color: #fff; border-radius: 20px 20px 0px 0px; font-size: 1.2em;
+    box-shadow: 0px 6px 10px 0px rgb(0 0 0 / 10%);
+	}
+.alert_pop_Title>span{float: right; padding-right: 20px;  cursor: pointer;}
+.alert_pop_Content{ width: 100%; height: 120px;	padding:20px; }
+.popup_Stop_Scroll{overflow: hidden; height: 100%; }
+.popup_hidden{display: none;}
+.objectHidden{display: none;}
+.myPage_HouseAndMate_Popup_Title{padding-left: 20px; width: 100%; height: 50px; line-height: 50px; 
+	background-color: #13a89e; color: #fff; border-radius: 20px 20px 0px 0px; font-size: 1.2em;}
+.myPage_HouseAndMate_Popup_Title>span{float: right; padding-right: 20px;  cursor: pointer;}
+.myPage_HouseAndMate_Popup_OneBlock{width: 90%; height: 140px; border-radius: 20px; 
+	box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%); margin: 30px auto;}
+.myPage_HouseAndMate_Popup_Content{width: 100%; height: 500px; background-color: #fff; overflow-y:scroll; }
+.myPage_HouseAndMate_Popup_Content::webkit-scrollbar{display:none;}
+
+.myPage_HouseAndMate_Popup_Img{position: relative; float: left;}
+.myPage_HouseAndMate_Popup_Img>a{padding: 0; margin: 0; box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 0%);}
+.myPage_HouseAndMate_Popup_Img>a>img{width: 110px; height: 110px; border-radius: 50px; margin: 15px 10px;}
+.myPage_HouseAndMate_Popup_Info{width: 280px; float: left;}
+.myPage_HouseAndMate_Popup_Info>li{margin-left:10px; height: 30px; line-height: 30px;}
+.myPage_HouseAndMate_Popup_Info>li:first-of-type{margin: 20px 0px 10px 10px;}
+.myPage_HouseAndMate_Popup_Info>li>span{margin:0px 10px 0px 0px;}
+.myPage_HouseAndMate_Popup_Info>li>span::before{background-color: #ffeb3f;}
+.myPage_HouseAndMate_empty{
+	float: left;
+    width: 80%;
+    margin: 25px 0px 0px 30px;
+    padding: 20px;
+    height: 250px;
+    font-size: 1.2em;}
+.myPage_HouseAndMate_empty>li:first-of-type{
+	    height: 30%;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 10px;
+    font-family: SsangmunDong;
+}
+.myPage_HouseAndMate_empty>li:last-of-type{
+	height: 30%;
+    padding-top: 10px;
+}
+.myPage_HouseAndMate_Popup_Btn{float: left; width: 110px; height: 120px; margin-top: 25px;}
+.myPage_HouseAndMate_Popup_Btn>a, .myPage_HouseAndMate_Popup_footer>a{height: 30px; width: 105px; line-height: 30px; 
+	font-size: 0.9em; text-align: center; background-color: #fff; color:#000; border-radius: 5px;}
+.myPage_HouseAndMate_Popup_footer, .alert_pop_footer{text-align: center; height: 50px; box-shadow: 0px -5px 11px 0px rgb(0 0 0 / 10%); 
+	border-radius: 0px 0px 20px 20px; background-color: #fff; }
+.myPage_HouseAndMate_Popup_footer>p, .alert_pop_footer>p { width: 100px; height: 30px; line-height: 30px; font-size:1em; background-color: #ddd; border-radius: 5px;
+	box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%); margin-top: 10px; display: inline-block; cursor: pointer;}
+.myPage_HouseAndMate_Popup_Btn>p:first-of-type{
+	width: 100%;
+    height: 24px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    line-height: 22px;
+    text-align: center;
+    font-size: 1em;
+}
+.myPage_HouseAndMate_Popup_Btn>p:last-of-type{
+	border-radius: 5px;
+    border: 1px solid #ddd;
+    height: 70px;
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 10px;
+}

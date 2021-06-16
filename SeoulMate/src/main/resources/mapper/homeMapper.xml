@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.HomeDAO">
+  	<select id="getHouseMap" resultType="com.seoulmate.home.vo.ListVO">
+  		select no, addr, housename, housepic1 from housewrite where housestate='모집중'
+	</select>
+  	<select id="getMateMap" resultType="String">
+  		select area from matewrite where matestate='모집중'
+	</select>
+ 	<select id="getNewHouse" resultType="com.seoulmate.home.vo.HouseWriteVO">
+  		select * from (select * from housewrite where housestate='모집중' and houseshow='공개'  
+  		<if test="param1 != null">AND addr LIKE '%${param1}%'</if> 
+  		order by writedate desc) <![CDATA[where rownum<= 3]]>
+	</select>
+ 	<select id="getDesposit" resultType="com.seoulmate.home.vo.HouseRoomVO">
+  		select * from (select distinct(rent), deposit from houseroom where no=${param1} and rent = (select min(rent) from houseroom where no=${param1})) <![CDATA[where rownum<= 1]]>
+	</select>
+ 	<select id="getNewMate" resultType="com.seoulmate.home.vo.MateWriteVO">
+  		select * from (select * from matewrite where matestate='모집중' and mateshow='공개' 
+  		<if test='param1 != null'>AND area LIKE '%${param1}%'</if>
+  		order by no desc) <![CDATA[where rownum<= 3]]>
+	</select>
+ 	<select id="getDetail" resultType="com.seoulmate.home.vo.MemberVO">
+  		select gender, birth from member where userid=#{param1}
+	</select>
+  </mapper>

@@ -1,0 +1,407 @@
+@charset "utf-8";
+/*//////////////////////////////// 커뮤니티 목록 스타일 ///////////*/
+#comSearchLi a{/*검색에 돋보기 a태그 스타일 초기화*/
+	box-shadow: none;
+	border:none;
+	border-radius:inherit;
+	margin: 0;
+	padding: 0;
+	line-height: inherit;
+	height: inherit;
+}
+/*검색키, 검색어창, 글쓰기 버튼 정렬*/
+.searchUl li{ 
+	float: left;
+}
+/*검색키 넓이 설정*/
+#searchKey{
+	width: 100px;
+	float:left;
+	vertical-align: middle;
+}
+/*글쓰기버튼을 밀어내려고 준 스타일*/
+#comSearchLi{
+	width: 90%;
+	margin-bottom:30px;
+}
+/*검색창 길이*/
+#comSearch{
+	width: 300px;
+	vertical-align: top;
+}
+/*검색창안에 돋보기 위치 조정 */
+.searchBtn{
+	width: 40px;
+	position: relative;
+	top:5px;
+	left:-40px;
+	box-shadow: none;
+	border:none;
+	border-radius:inherit;
+	margin: 0;
+	padding: 0;
+	line-height: inherit;
+	height: 40px;
+	background-color: inherit;
+}
+/*돋보기 이미지 크기 조정*/
+.searchBtn>img{
+	width: 25px;
+	display: block;
+}
+/*글목록 제목에 넓이주고 textoverflow 설정*/
+.commSubject{
+	max-width : 850px;
+	white-space: nowrap;
+	overflow-wrap: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: table-cell;
+}
+/* 댓글수가 제목이랑 한줄에 나오게 세팅 */
+.commentNum{
+	display: table-cell;
+}
+/* 페이징에 텍스트정렬 */
+.pagingTextAlign{
+	text-align:center;
+}
+/*/////////////////////////////글 내용 보기 스타일*/
+/* 제목에서 밑줄하이라이트 빼기 */
+.communityViewSubject{
+	display: inline-block;
+    margin: 40px 0;
+    font-size: 1.5rem;
+    z-index: 0;
+    padding: 0 6px;
+    position: relative;
+    font-weight: 600;
+    color: #111215;
+}
+/* 사용자 프로필이미지 크기 설정 */
+.communityView_user_porfile img{
+	width: 60px;
+	height: 60px;
+	border-radius: 60px;
+	margin-right: 20px;
+	float: left;
+}
+/* 아이디, 등록일, 조회스, 댓글수 세팅 */
+.communityView_user_detail{
+	height: 60px;
+	width:150px;
+	padding-top: 5px;
+	float:left;
+	margin-bottom: 20px;
+}
+/* 본문 레이아웃 세팅 */
+.communityView_content{
+	 width: 100%;
+	 border: 1px solid #eee;
+	 overflow:auto; 
+	 padding:20px;
+	 margin-bottom: 10px;
+	 min-height: 500px;
+}
+.communityView_comment_user_detail{
+	float: left;
+}
+.communityView_comment_btn{
+	text-align: right;
+}
+.communityView_comment_content{
+	 border: 1px solid #eee;
+	 border-radius: 20px;
+	 padding:20px;
+	 margin: 5px 0 30px 73px;
+}
+.communityView_comment_content_edit{
+	border: 1px solid #eee;
+	border-radius: 20px;
+	padding:20px;
+	margin: 5px 0 30px 73px;
+}
+/*신고하기버튼 초기화*/
+.reportBtn{ 
+	box-shadow: none;
+	border:none;
+	border-radius:inherit;
+	margin: 0;
+	padding: 0;
+	line-height: inherit;
+	height: inherit;
+}
+/*신고하기 이미지 크기, 스타일 설정*/
+.reportBtn>img{
+	width: 20px;
+	padding-top: 20px;
+}
+/* 팝업 스타일 */
+.pup_wrap{
+	display:none;
+	width: 100%;
+	height:100vh;
+	position: fixed;
+	top:0;
+	background-color: rgb(0, 0, 0, 0.5);
+	z-index: 0;
+} 
+.pup_form{
+	width: 500px;
+	position:absolute;
+	top: 50%;
+	left: 50%;
+	margin-top:-300px;
+	margin-left: -250px;
+	border-radius: 20px;
+	background-color: #fff;
+	box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%);
+	overflow: hidden;
+}
+.pup_form .pup_head {
+	position: relative;
+	height: 50px;
+	line-height: 50px;
+	font-size: 20px;
+	padding-left: 20px;
+	background-color: #13a89e;
+	color: #fff;
+}
+.pup_body {
+	padding: 30px;
+	height: 465px;
+	overflow: hidden;
+	/*overflow-y: auto;*/
+}
+.pup_long{ /* li의 높이가 3줄을 차지 */
+	height:125px;
+}
+.pup_bottom {
+	padding: 15px 0;
+	text-align: center;
+	box-shadow: 0 -1px 22px -2px rgb(0 0 0 / 15%);
+}
+.pup_bottom a, .bt_save {
+	display: inline-block;
+	padding: 0 15px;
+	width: 130px;
+	height: 40px;
+	margin: 0 2.5px;
+	line-height: 40px;
+	color: #fff;
+	font-size: 16px;
+	font-weight: 400;
+	text-align: center;
+	border-radius: 5px;
+}
+.pup_bottom a.btn_cancel {
+	background-color: #8f969d;
+}
+.pup_bottom a.btn_save {
+	background-color: #2171cc;
+}
+.pup_bottom a.btn_del {
+	background-color: #ef8181;
+}
+.pup_btn_close {
+	position: absolute;
+	right: 17px;
+	top: 11px;
+	width: 25px;
+	height: 25px !important;
+	font-size: 0;
+	text-indent: -9999px;
+	opacity: 0.7;
+}
+.pup_btn_close:hover {
+	opacity: 1;
+}
+
+.pup_btn_close:before, .pup_btn_close:after {
+	position: absolute;
+	left: 15px;
+	content: ' ';
+	height: 25px;
+	width: 2px;
+	background-color: #fff;
+}
+.pup_btn_close:before {
+	transform: rotate(45deg);
+}
+.pup_btn_close:after {
+	transform: rotate(-45deg);
+}
+.pup_list{
+	display: flex;
+	border-radius: 10px;
+	padding: 10px;
+	margin-bottom: 20px;
+	box-shadow: 4px 3px 10px 0px rgb(0 0 0 / 15%);
+}
+.pup_list ul, .pup_list li{
+	list-style:none;
+}
+.pup_list li{
+	margin-bottom: 10px;
+}
+.pup_list li input[type=text], .pup_list li select{
+	width: 300px;	
+}
+.pup_list li textarea{
+	width: 300px;	
+}
+ .pup_list li>div{
+ 	float: left;
+ 	text-align:left;
+ 	width: 100px;
+ 	height: 100%;
+ 	line-height: 48px;
+ }
+ #radioDiv{
+ 	width:250px;
+ }
+ #radioDiv input{
+ 	width: 30px;
+ }
+ #radioDiv input[type="radio"] {
+   outline-style: none;
+}
+ .pup_bottom>.btn_cancel:hover, .pup_bottom>.btn_save:hover, .pup_bottom>.btn_del:hover{
+ 	background-color: #D2D2D2; color:#13a89e; text-decoration: none; font-weight: bold;
+ }
+ /* 토글버튼==========*/
+.toggle_cont {margin:0 10px 0 0;}
+.toggle_cont .cmn_toggle {position:absolute; margin-left:-9999px; visibility:hidden;}
+.toggle_cont .cmn_toggle + label {display:block; position:relative; cursor:pointer; outline:none; user-select:none;}
+input.cmn_toggle_round + label {padding:2px;width: 53px;height: 26px;border-radius:60px;}
+input.cmn_toggle_round + label:before, input.cmn_toggle_round + label:after {content:""; display:block; position:absolute; top:1px; left:1px; bottom:1px;}
+input.cmn_toggle_round + label:before {right:1px; background-color:#c0bfc5; border-radius:60px; transition:background 0.4s;}
+input.cmn_toggle_round + label:after {margin-top:-1px;width: 24px;background-color:#fff;border-radius:100%;box-shadow:0 2px 5px rgba(0, 0, 0, 0.3);transition:margin 0.4s;}
+input.cmn_toggle_round:checked + label:before {background-color: #13a89e;}
+input.cmn_toggle_round:checked + label:after {margin-left:30px;}
+.toggle_cont label {margin:0 auto;}
+/* 토글버튼==========*/
+
+
+
+
+
+/*////////////////////////////// 커뮤니티 글쓰기 스타일 ///////////*/
+
+#comWriteLi{/*카테고리, 제목, 글쓰기버튼 정렬 스타일*/
+	float:left;
+	width:15%;
+}
+#comWriteLi>select{/*카테고리, 제목, 글쓰기버튼 정렬 스타일*/
+	width: 100%;
+}
+#comWriteSubject{
+	float:left;
+	width: 75.5%;
+}
+#comWriteSubject>input{/*글작성에서 제목입력창 크기*/
+	width: 100%;
+}
+/*///////////////////////////////  찜하기 스타일 ///////////*/
+
+
+
+
+
+/*////////////////////////////////////////////  자주하는질문 스타일 ///////////*/
+
+#faq_member_wrap{ /*faq랑 지주하는질문 중앙 정렬*/
+	text-align:center;
+}
+#faq_member_wrap p:nth-child(2){/*자주하는질문 위 마진 초기화*/
+	margin-top:0;
+}
+#faqSearch{ /*검색창이랑 검색버튼 정렬*/
+	display:inline-block;
+	width: 100%;
+}
+#faqSearch>input{/*검색창 크기*/
+	width: 100%;
+	height:50ppx;
+}
+#faqSearchBtn{/*검색버튼 스타일*/
+	width:100px;
+	height:48px;
+	margin:0;
+	border-radius:2px;
+}
+.faqATag{/*"문의하기" a태그 초기화 및 색지정 */
+	box-shadow: none;
+	border:none;
+	border-radius:inherit;
+	margin: 0;
+	padding: 0;
+	line-height: inherit;
+	height: inherit;
+	/*색, 볼드*/
+	color: #13a89e;
+	font-weight: bold;
+}
+.qnaList{/*질문영역 li 박스 스타일*/
+	border: 1px solid #13a89e;
+	height: 52px;
+	line-height:50px;
+	padding: 0 10px 0 10px;
+	margin-bottom:15px;
+	/*답변 감추기*/
+	overflow: hidden;	
+}
+.qnaList img{ /* + 모양 사이즈랑 위치*/
+	width:20px;
+ 	margin: 9px 20px 0 0;
+}
+.faqATag1{ /* faqATag2에 display:none만 변경함 */
+	float: right;
+	box-shadow: none;
+	display: none;
+	width:5px;
+}
+.faqATag2{ /* +이 눌러지게 설정해야해서 a태그 기존 스타일 초기화*/
+	float: right;
+	box-shadow: none;
+	display: block;
+	width:5px;
+}
+.faqDiv{ /* faq 답변 Div */
+	margin:0 auto 15px auto;
+	background-color:#eee;
+	padding: 10px 10px;
+	min-height:40px;
+	line-height:20px;
+/* 	display: none; */
+}
+.qnaList{
+	transition:.3s
+}
+.cursor{
+	cursor: pointer;
+}
+/*////////////////////////////////////////////  문의하기 스타일 ///////////*/
+#contactForm>*{/* 폼 안에 모든 객체 넓이 100% */
+	width: 100%;
+}
+#contact::placeholder{
+	font-size: 1rem;
+	color: #bababa;
+}
+#contact{
+	font-size:1rem;
+	border:1px solid #eee; 
+	padding:8px;
+	font-family:'NotoSans';
+	border-radius:3px;
+	resize:none;
+	overflow:auto;
+	box-sizing:border-box;
+	-webkit-appearance: none;
+}
+
+/*////////////////////////////////////////////  관리자 신고 스타일 ///////////*/
+/*메인 div는 대쉬보드랑 같은 클래스를 사용한다*/
+
+/*////////////////////////////////////////////  관리자 문의 스타일 ///////////*/

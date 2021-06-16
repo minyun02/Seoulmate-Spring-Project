@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.HouseRoomDAO">
+  	<insert id="roomInsert" parameterType="com.seoulmate.home.vo.HouseRoomVO">
+  		insert into houseroom(hno, no, roomName, deposit, rent, enterdate, minStay, maxStay, roomPeople, furniture, incFurniture, userid) 
+		values (roomsq.nextval, housematesq.currval, #{roomName}, #{deposit}, #{rent}, to_date(#{enterdate}, 'YYYY-MM-DD'), #{minStay}, #{maxStay}, 
+				#{roomPeople}, #{furniture}, #{incFurniture}, #{userid} )
+  	</insert>
+	<select id="roomSelect" resultType="com.seoulmate.home.vo.HouseRoomVO">
+		select no, hno, userid, roomName, deposit, rent, to_char(enterdate, 'YYYY-MM-DD') enterdate, minStay, maxStay, roomPeople, furniture, incFurniture 
+		from houseroom where no=#{param1} and userid=#{param2}
+	</select>
+	<select id="roomSelect2" resultType="com.seoulmate.home.vo.HouseRoomVO">
+		select no, hno, userid, roomName, deposit, rent, enterdate, minStay, maxStay, roomPeople, furniture, incFurniture 
+		from houseroom where no=#{param1}
+	</select>
+	<update id="roomUpdate" parameterType="com.seoulmate.home.vo.HouseRoomVO">
+		update houseroom set roomName=#{roomName}, deposit=#{deposit}, rent=#{rent}, enterdate=to_date(#{enterdate}, 'YYYY-MM-DD'), minStay=#{minStay},
+		maxStay=#{maxStay}, roomPeople=#{roomPeople}, furniture=${furniture}, 
+		incFurniture=#{incFurniture} where userid=#{userid} and no=${no} and hno=${hno}
+	</update>
+	<delete id="roomDel">
+		delete from houseroom where no=${param1} and userid=#{param2} and hno=${param3}	
+	</delete>
+	<select id="roomListSelect" parameterType="int" resultType="com.seoulmate.home.vo.HouseRoomVO">
+		select no, hno, userid, roomName, deposit, rent, to_char(enterdate,'YYYY-MM-DD') as enterdate, minStay, maxStay, roomPeople, furniture, incFurniture 
+		from houseroom where no=#{param1 }
+	</select>
+	<select id="getNumOfRooms" resultType="int">
+		select count(no) from houseroom where no=${param1} and userid=#{param2}
+	</select>
+  </mapper>
+  

@@ -1,0 +1,145 @@
+@charset "UTF-8";
+
+.hwWrap{}
+.hwWrap .title_wrap{
+	margin: 20px auto;
+}
+.hwWrap .btn_addr{ 
+	margin-left: 20px;
+}
+.hwWrap .hideLi{
+	height: 20px;
+}
+
+.hwWrap #houseWrite1,
+.hwWrap #houseWrite5, #houseWrite1{
+	width: 600px;
+	margin: 0 auto;
+}
+#mateWrite2 .form_box.preview_img{
+	padding-left: 0;
+}
+
+.preview_img li{
+	display: inherit;
+}
+
+.preview_img li:nth-child(2){
+	height: 159px;
+}
+.preview_img li:nth-child(2) input{
+	display: block;
+}
+.form_box.preview_img li input{
+	margin: 10px 0;
+}
+
+.room_btn{
+	margin: 30px 0;
+	text-align: center;
+}
+
+.room_btn a{
+	margin: 0;
+}
+.s_margin#HproUl{
+	height: auto;
+	width: 600px;
+	margin: 0 auto;
+	overflow: hidden;
+	padding-bottom: 6px;
+}
+
+#houseWrite6 .form_box,
+#houseWrite7 .form_box,
+#houseWrite8 .form_box,
+#houseWrite9 .form_box{
+	width: 600px;
+	margin-top: 20px;
+}
+#houseWrite8 .form_box.choice li > label,
+#houseWrite6 .form_box.choice li > label{
+	width: 289px;
+}
+
+/*이전 다음 취소 버튼 */
+.btnclass{width:max-content; margin:40px auto 0; }
+.classDate{width:100px;}
+
+/* input[type="date"] {width:200px;} */
+/* .house_wrap{width:800px; margin:0 auto; } */
+.content ul li{/* word-break:keep-all; */}
+
+#mateWrite2 ul li:nth-child(2){
+	display: inherit;
+}
+
+#mateWrite2 ul li:nth-child(2) input{
+	display: block;
+	margin: 10px 0;
+}
+
+.form_box li input, .form_box li select{margin:0px; width:300px;}
+.form_box{width:800px;margin:0 auto;/* padding-left: 100px; */}
+.content label{width:150px;}
+.form_box.choice li > label {width: 240px;}
+#houseWrite1_ul2{display: none;}
+#roomPlus{margin:0 auto;}
+#houseWrite1 .checks { width: 560px;}
+#ck{margin:0 auto;}
+#hPic img{width: 20%;height: 250px;object-fit:cover;}
+
+
+
+#multiple-container{width: 100%; margin:0 auto; float:left; position: relative;}
+#multiple-container img{width:250px; height: 250px; margin:0 auto; float:left;}
+#houseWrite2, #houseWrite3, #houseWrite4, #houseWrite5, 
+#houseWrite6, #houseWrite7, #houseWrite8, #houseWrite9 {display:none; margin: 0 auto;}
+
+#houseWrite2 .form_box.choice li > label {width: 110px;}
+#houseWrite2 .checks{height: 21px;}
+#houseWrite2 .checks label{height: 21px;}
+#hosueWrite5 .checks>label{width:100px;}
+#houseWrite5 .checks {width: 295px;}
+#houseWrite8{width: 800px;}
+#houseWrite8 .checks>label{width:200px;}
+#hPic{/* height:250px; *//* width: 250px; *//* width: 100%; *//* margin:0 auto; *//* text-align: center; */display: flex;height: max-content;}
+#HproUl>li{/* float: right; */float: left;}
+
+.title_wrap div{min-height:300px;}
+.checks{width:800px;}
+.checks>label{width:120px;}
+/* #houseWrite6 input, #houseWrite6 select{width:230px;} */
+/*방추가하기 스타일*/
+.room2, .room3, .room4, #roomMinus{
+	display:none;
+}
+
+/* input[type="date"] {width:200px;} */
+/* input[type="text"] {width:200px;} */
+.content ul li{word-break:keep-all;}
+.content label{width:150px; }
+/* #mate_date, #mate_area, #mate_rent{width:110px;} */
+.form_box{width:850px; margin:0 auto;}
+.form_box li input, .form_box li select{margin:0px; width:230px;}
+.form_box.choice li > label {width: 240px;}
+.checks{width:850px;}
+.checks>label{width:120px;}
+.title_wrap div{min-height: 300px;}
+#ck{margin:0 auto; width: 60%;}
+#mateImg1{width:150px; height:107px; }
+#mPic img{width: 250px; height: 250px;}
+#matePic1 img{width:150px; height: 150px;}
+#mateWrite1 .checks>label{width:130px;}
+#mateWrite1 .checks {width: 295px;}
+#mate_area{width:150px;}
+#area1, #area2, #area3{width:130px; }
+/* #mateWrite6{width: 800px;} */
+#mateWrite6 .checks>label{width:200px;}
+/* #mate_party checks{width:600px;} */
+.btnclass{padding-left:50px; padding-top:50px;}
+#mateWrite2, #mateWrite3, #mateWrite4, #mateWrite5, #mateWrite6, #mateWrite7 {display:none; }
+#mPic, #mateWrite2 #mPic{height:max-content;}
+#area1, #area2, #area3{width:120px;}
+#gu1Edit, #dong1Edit, #gu2Edit, #dong2Edit, #gu3Edit, #dong3Edit{width:230px; float:left;}
+#area1Edit, #area2Edit, #area3Edit{width:284px;}

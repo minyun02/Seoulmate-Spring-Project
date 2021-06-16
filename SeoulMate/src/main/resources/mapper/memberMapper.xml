@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.MemberDAO">
+  	<select id="gu" resultType="String">
+  		select distinct(gu) from zipcode order by gu
+  	</select>
+  	<select id="dong" resultType="String">
+  		select distinct(dong) from zipcode where gu=#{param1} and not dong is null order by dong
+  	</select>
+	<select id="loginCheck" resultType="com.seoulmate.home.vo.MemberVO">
+		select userid, username, state, grade, area, email from member where userid=#{param1} and userpwd=#{param2}
+	</select>
+  	<select id="idCheck" resultType="int">
+  		select count(userid) from member where userid=#{param1}
+  	</select>
+  	<select id="emailCheck" resultType="int">
+  		select count(email) from member where email=#{param1}
+  	</select>
+  	<insert id="memberInsert" parameterType="com.seoulmate.home.vo.MemberVO">
+  		insert into member(no, userid, userpwd, username, tel, email, birth, gender, area, profilePic) 
+  		values(memsq.nextval, #{userid}, #{userpwd}, #{username}, #{tel}, #{email}, #{birth}, #{gender}, #{area}, #{profilePic})
+  	</insert>
+  	<select id="memberSelect" parameterType="String" resultType="com.seoulmate.home.vo.MemberVO">
+  		select userid, userpwd, username, tel, to_char(birth, 'YYYY-MM-DD') birth, gender, profilePic, area, email, grade from member where userid=#{param1}
+  	</select>
+  	<!-- public MemberVO memberPwdSelect(String userid); -->
+  	<select id="memberPwdSelect" resultType="int">
+  		select count(userpwd) userpwd from member where userid=#{param1} and userpwd=#{param2}
+  	</select>
+  	<select id="memberProfile" resultType="String">
+  		select profilePic from member where userid=#{param1}
+  	</select>
+  	<update id="memberUpdatePwdY" parameterType="com.seoulmate.home.vo.MemberVO">
+  		update member set userpwd=#{userpwd}, tel=#{tel}, area=#{area}, email=#{email}, profilePic=#{profilePic} where userid=#{userid}
+  	</update>
+  	<update id="memberUpdatePwdN" parameterType="com.seoulmate.home.vo.MemberVO">
+  		update member set tel=#{tel}, area=#{area}, email=#{email}, profilePic=#{profilePic} where userid=#{userid}
+  	</update>
+  	<select id="memberFindId" resultType="String">
+  		select userid from member where username=#{username} and email=#{email}
+  	</select>
+  	<select id="pwdFind" resultType="String">
+  		select userpwd from member where userid=#{param1} and email=#{param2}
+  	</select>
+  	<update id="memberExit">
+  		update member set state='탈퇴' where userid=#{param1} and userpwd=#{param2}
+  	</update>
+  	<update id="gradePremiumUpdate">
+  		update member set grade=2 where userid=#{param1}
+  	</update>
+  	<select id="gradeCheck" resultType="int">
+  		select grade from member where userid=#{param1}
+  	</select>
+  </mapper>
+

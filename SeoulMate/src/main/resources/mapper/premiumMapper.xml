@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">   
+<mapper namespace="com.seoulmate.home.dao.PremiumDAO">
+	<select id="payEndCalculate" resultType="String">
+		SELECT TO_CHAR(ADD_MONTHS(SYSDATE, ${param1}), 'YYYYMMDDHH24MISS') AS payEnd FROM dual
+	</select>
+	<insert id="payCompleteInsert" parameterType="com.seoulmate.home.vo.PayVO">
+		INSERT INTO pay(NO, userid, username, imp_uid, merchant_uid, amount, payEnd, payMethod) 
+		VALUES(paysq.nextval, #{userid}, #{username}, #{imp_uid}, #{merchant_uid}, ${amount}, to_date(#{payEnd}, 'YYYYMMDDHH24MISS') , #{payMethod})
+	</insert>
+</mapper>

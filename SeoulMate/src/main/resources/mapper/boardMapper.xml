@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.seoulmate.home.dao.BoardDAO">
+ 	<select id="comAllRecord" parameterType="com.seoulmate.home.vo.PageVO" resultType="com.seoulmate.home.vo.BoardVO">
+ 		select * from        
+		    (select * from               
+		        (select * from
+		        	(select * from
+		            	(select no, category, subject, userid, hit, to_char(writedate, 'MM-DD HH:MI') writedate, replycnt, state, content from community where state='공개')
+	            <if test="searchKey != null and searchWord != null and searchKey != '' and searchKey != '' ">where ${searchKey} like '%${searchWord}%'</if> order by no desc)
+	       <if test="category != null and category != '' ">where category=#{category}</if>)
+	    where <![CDATA[rownum<=]]>${pageNum * commOnePageRecord} order by no asc)
+	where <![CDATA[rownum<=]]>
+  	<if test="pageNum==totalPage">${lastPageRecord}</if>
+  	<if test="pageNum!=totalPage">${commOnePageRecord}</if>
+  	order by no desc
+  	</select>
+  	<insert id="boardInsert" parameterType="com.seoulmate.home.vo.BoardVO">
+  		insert into community(no, userid, category, subject, content, ip, state)
+  		values(comsq.nextval, #{userid}, #{category}, #{subject}, #{content}, #{ip}, '공개')
+  	</insert>
+  	<select id="totalRecord" parameterType="com.seoulmate.home.vo.PageVO" resultType="int">
+  		select count(no) totalRecord from
+  			(select * from (select * from community where state='공개')
+  			<if test="searchKey != null and searchWord != null and searchKey != '' and searchWord != '' ">where ${searchKey} like '%${searchWord}%'</if>)
+  		<if test="category != null and category != '' ">where category=#{category}</if>	
+  	</select>
+  	<select id="boardSelect" resultType="com.seoulmate.home.vo.BoardVO">
+  		select c.no, c.userid, subject, content, category, hit, writedate, m.profilepic profilePic
+		from community c join member m on c.userid=m.userid where c.no=${param1}
+  	</select>
+  	<select id="replyCount" resultType="int">
+  		select count(num) cnt from communityReply where no=#{param1}
+  	</select>
+  	<update id="hitUpdate">
+  		update community set hit=hit+1 where no=#{param1}
+  	</update>
+  	<delete id="communityDelete">
+  		delete from community where no=#{param1} and userid=#{param2}
+  	</delete>
+  	<update id="replyUpdate">
+  		update community set replycnt=
+  		<if test="param2 == 'plus'">
+  			replycnt+1
+  		</if>
+  		<if test="param2 == 'minus'">
+  			replycnt-1
+  		</if>  
+  		 where no=#{param1}
+  	</update>
+  	<update id="communityEdit" parameterType="com.seoulmate.home.vo.BoardVO">
+  		update community set category=#{category}, subject=#{subject}, content=#{content}, writedate=sysdate where no=${no}
+  	</update>
+  	<select id="nextPrevSelect" resultType="com.seoulmate.home.vo.PageVO">
+		select * from
+		    (select
+		    lead(no, 1, 0) over (order by no desc) prevNo,
+		    lag(no, 1, 0) over (order by no desc) nextNo,
+		    no, category, userid, subject, content
+		    from
+		        (select * from 
+		            (select * from
+		                (select no, category, userid, subject, content
+		                from community where state='공개')
+		           <if test="param3 != null and param4 != null and param3 != '' and param4 != '' "> where ${param3} like '%${param4}%'</if> order by no desc)
+		       <if test="param2 != null and param2 != '' "> where category=#{param2}</if>) )
+		where no=${param1}
+  	</select>
+  	<select id="stateCheck" resultType="int">
+  		select count(no) from community where 
+<!-- 		<if test="param2 != null and param2 != '' "> userid = #{param2} and</if> -->
+		 no = ${param1} and state='공개'
+  	</select>
+  	<select id="reportCheck" resultType="int">
+  		select count(no) from report where no=${param1}
+  	</select>
+</mapper>

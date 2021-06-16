@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.PropensityDAO">
+	<insert id="propInsert" parameterType="com.seoulmate.home.vo.PropensityVO">
+		insert into propensity(pno, userid, pcase, h_noise, h_pattern, h_pet, h_petwith,
+		 h_smoke, h_mood, h_communication, h_party, h_enter, h_support, h_etc, 
+		 m_pattern, m_personality, m_pet, m_smoke, m_age, m_gender, m_global, m_now, pdate)
+		 values(psq.nextval, #{userid}, #{pcase},  #{h_noise}, #{h_pattern}, 
+		 #{h_pet}, #{h_petwith}, #{h_smoke}, #{h_mood}, #{h_communication}, #{h_party}, #{h_enter}, 
+		 #{h_supportStr}, #{h_etcStr}, #{m_pattern}, #{m_personality}, #{m_pet}, #{m_smoke}, 
+		 #{m_age}, #{m_gender}, #{m_global}, #{m_now}, sysdate)
+	</insert>
+	<select id="propPcaseM" resultType="int">
+		select count(pcase) from propensity where userid=#{param1} and pcase='m'
+	</select>
+	<select id="propPcaseH" resultType="int">
+		select count(pcase) from propensity where userid=#{param1} and pcase='h'
+	</select>
+	<select id="propMateSelect" parameterType="String" resultType="com.seoulmate.home.vo.PropensityVO">
+		select pno, userid, pcase, housename, h_noise, h_pattern, h_pet, h_petwith,
+		 h_smoke, h_mood, h_communication, h_party, h_enter, h_support as h_supportStr, h_etc as h_etcStr, 
+		 m_pattern, m_personality, m_pet, m_smoke, m_age, m_gender, m_global, m_now, pdate from propensity where userid=#{param1} and pcase='m'
+	</select>
+	<update id="propMateUpdate" parameterType="com.seoulmate.home.vo.PropensityVO">
+		update propensity set h_noise=#{h_noise}, h_pattern=#{h_pattern}, h_pet=#{h_pet}, h_petwith=#{h_petwith}, 
+		 h_smoke=#{h_smoke}, h_mood=#{h_mood}, h_communication=#{h_communication}, h_party=#{h_party}, 
+		 h_enter=#{h_enter}, h_support=#{h_supportStr}, h_etc=#{h_etcStr}, 
+		 m_pattern=#{m_pattern}, m_personality=#{m_personality}, m_pet=#{m_pet}, 
+		 m_smoke=#{m_smoke}, m_age=#{m_age}, m_gender=#{m_gender}, m_global=#{m_global}, m_now=#{m_now} 
+		 where userid=#{userid}
+	</update>
+	<select id="propHouseSelect" resultType="com.seoulmate.home.vo.PropensityVO">
+		select pno, userid, pcase, housename, h_noise, h_pattern, h_pet, h_petwith,
+		 h_smoke, h_mood, h_communication, h_party, h_enter, h_support as h_supportStr, h_etc as h_etcStr, 
+		 m_pattern, m_personality, m_pet, m_smoke, m_age, m_gender, m_global, m_now, pdate 
+		 from propensity where userid=#{param1} and pno=#{param2}
+	</select>
+	<update id="propHouseUpdate" parameterType="com.seoulmate.home.vo.PropensityVO">
+		update propensity set h_noise=#{h_noise}, h_pattern=#{h_pattern}, h_pet=#{h_pet}, h_petwith=#{h_petwith}, 
+		 h_smoke=#{h_smoke}, h_mood=#{h_mood}, h_communication=#{h_communication}, h_party=#{h_party}, 
+		 h_enter=#{h_enter}, h_support=#{h_supportStr}, h_etc=#{h_etcStr}, 
+		 m_pattern=#{m_pattern}, m_personality=#{m_personality}, m_pet=#{m_pet}, 
+		 m_smoke=#{m_smoke}, m_age=#{m_age}, m_gender=#{m_gender}, m_global=#{m_global}, m_now=#{m_now}, pdate=sysdate 
+		 where userid=#{userid} and pno=#{pno}
+	</update>
+	<select id="propHcnt" parameterType="String" resultType="int">
+		SELECT count(pno) FROM PROPENSITY WHERE pcase='h' AND userid=#{param1} AND housename IS null
+	</select>
+	<select id="propNoHouse" parameterType="String" resultType="int">
+		SELECT pno FROM PROPENSITY WHERE pcase='h' AND userid=#{param1} AND housename IS null
+	</select>
+	<select id="proNoHouse" parameterType="String" resultType="int">
+		SELECT pno FROM PROPENSITY WHERE pcase='h' AND userid=#{param1} AND housename IS null
+	</select>
+	<select id="noHousePnoChk" resultType="int">
+		select count(pno) from PROPENSITY where userid=#{param1} and pno=#{param2}
+	</select>
+	<select id="houseCheck" resultType="int">
+		select count(pno) from propensity where pcase='h' and userid=#{param1} and housename is not null
+	</select>
+	<select id="housePnoCheck" resultType="int">
+		select pno from propensity where pcase='h' and userid=#{param1} and housename is null
+	</select>
+	<select id="proPnoCheck" resultType="int">
+		 select pno from (select pno from propensity where userid=#{param1} order by pno desc) where rownum=1
+	</select>
+	<select id="proHouseCheck" resultType="int">
+		select pno from propensity where userid=#{param1} and pcase='h'
+	</select>
+	<select id="housestateCheck" resultType="int">
+		select count(pno) pno from housewrite where pno=#{param1} and housestate!='모집중'
+	</select>
+	<delete id="proDelNoHouse">
+		delete from propensity where userid=#{param1} and pno=#{param2}
+	</delete>
+	<select id="propHouseSelect2" resultType="com.seoulmate.home.vo.PropensityVO">
+		select pno, userid, pcase, housename, h_noise, h_pattern, h_pet, h_petwith,
+		 h_smoke, h_mood, h_communication, h_party, h_enter, h_support as h_supportStr, h_etc as h_etcStr, 
+		 m_pattern, m_personality, m_pet, m_smoke, m_age, m_gender, m_global, m_now, pdate 
+		 from propensity where pno=#{param1}
+	</select>
+	<select id="propMateSelect2" parameterType="String" resultType="com.seoulmate.home.vo.PropensityVO">
+		select pno, userid, pcase, housename, h_noise, h_pattern, h_pet, h_petwith,
+		 h_smoke, h_mood, h_communication, h_party, h_enter, h_support as h_supportStr, h_etc as h_etcStr, 
+		 m_pattern, m_personality, m_pet, m_smoke, m_age, m_gender, m_global, m_now, pdate from propensity where pno=#{param1} and pcase='m'
+	</select>
+	<update id="ProHouseNameUpdate" parameterType="com.seoulmate.home.vo.PropensityVO">
+		update propensity set housename = '' where pno=#{pno} and userid=#{userid}
+	</update>
+<!-- 	<select id="ProHouseNameCheck" resultType="com.seoulmate.home.vo.PropensityVO"> -->
+<!-- 		select select -->
+<!-- 	</select> -->
+	<select id="getMatchingSelect" parameterType="int" resultType="com.seoulmate.home.vo.PropensityVO">
+		SELECT pno, housename, (h_noise+h_pattern+m_pattern+m_age+m_global)/5 AS life, 
+			(h_pet+h_petwith+m_pet)/3 AS pet, 
+			(h_mood+h_communication+h_party+h_enter)/4 AS communicate,
+			(h_smoke+m_smoke)/2 AS SMOKE, 
+			m_personality AS PERSONALITY, 
+			(H_SUPPORT+H_ETC)/2 AS etc,
+			m_now AS now
+		FROM 
+			(SELECT h.pno, h.housename,
+				abs(abs(h.h_noise-m.h_noise)-2) AS h_noise, abs(abs(h.h_pattern-m.h_pattern)-2) AS h_pattern, 
+				abs(abs(h.h_pet-m.h_pet)-2) AS h_pet, abs(abs(h.h_petwith-m.h_petwith)-2) AS h_petwith,
+				abs(abs(h.h_smoke-m.h_smoke)-2) AS h_smoke, abs(abs(h.h_mood-m.h_mood)-2) AS h_mood, abs(abs(h.h_communication-m.h_communication)-2) AS h_communication, 
+				abs(abs(h.h_party-m.h_party)-2) AS h_party, abs(abs(h.h_enter-m.h_enter)-2) AS h_enter, 
+				abs(abs(h.m_pattern-m.m_pattern)-2) AS m_pattern, abs(abs(h.m_personality-m.m_personality)-2) AS m_personality, abs(abs(h.m_pet-m.m_pet)-2) AS m_pet, 
+				abs(abs(h.m_smoke-m.m_smoke)-2) AS m_smoke, abs(abs(h.m_age-m.m_age)-2) AS m_age, 
+				abs(abs(h.m_global-m.m_global)-2) AS m_global, abs(abs(h.m_now-m.m_now)-2) AS m_now,
+				abs(nvl((abs(h.h_support-m.h_support)),0)-2) AS H_SUPPORT, abs(nvl((abs(h.H_ETC-m.H_ETC)),0)-2) AS H_ETC
+			FROM 
+				(SELECT 
+					pno, housename,  H_NOISE, H_PATTERN, H_PET, H_PETWITH, H_SMOKE, H_MOOD, H_COMMUNICATION, H_PARTY, H_ENTER, M_PATTERN, M_PERSONALITY, M_PET, M_SMOKE, M_AGE, M_GENDER, M_GLOBAL, M_NOW,
+					substr(to_char(pdate, 'YYYY'),1,1) AS pdate, nvl((LENGTH(H_SUPPORT)),0)/2 AS H_SUPPORT, nvl((LENGTH(H_ETC)),0)/2 AS H_ETC
+				FROM 
+					PROPENSITY 
+				WHERE 
+					pno=${param1} AND PCASE='h') h  --하우스의 pno( 메이트의 글을 보는 경우 = 처음엔 세션에 저장된 값으로 가져오고, 집을 선택해서 누를경우 해당 pno로 매칭결과를 알려준다.)
+			JOIN
+				(SELECT
+					H_NOISE, H_PATTERN, H_PET, H_PETWITH, H_SMOKE, H_MOOD, H_COMMUNICATION, H_PARTY, H_ENTER, M_PATTERN, M_PERSONALITY, M_PET, M_SMOKE, M_AGE, M_GENDER, M_GLOBAL, M_NOW,
+					substr(to_char(pdate, 'YYYY'),1,1) AS pdate, nvl((LENGTH(H_SUPPORT)),0)/2 AS H_SUPPORT, nvl((LENGTH(H_ETC)),0)/2 AS H_ETC
+				FROM 
+					PROPENSITY 
+				WHERE 
+					pno=${param2} AND PCASE='m') m
+			ON 
+				h.pdate=m.pdate) 
+	</select>
+	<select id="getMatchingScore" parameterType="int" resultType="com.seoulmate.home.vo.PropensityVO">
+	SELECT pno,
+		round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+	FROM 
+		(SELECT h.pno,
+			abs(h.h_noise-m.h_noise) AS h_noise, abs(h.h_pattern-m.h_pattern) AS h_pattern, abs(h.h_pet-m.h_pet) AS h_pet, abs(h.h_petwith-m.h_petwith) AS h_petwith,
+				abs(h.h_smoke-m.h_smoke) AS h_smoke, abs(h.h_mood-m.h_mood) AS h_mood, abs(h.h_communication-m.h_communication) AS h_communication, abs(h.h_party-m.h_party) AS h_party,
+				abs(h.h_enter-m.h_enter) AS h_enter, abs(h.m_pattern-m.m_pattern) AS m_pattern, abs(h.m_personality-m.m_personality) AS m_personality, abs(h.m_pet-m.m_pet) AS m_pet, 
+				abs(h.m_smoke-m.m_smoke) AS m_smoke, abs(h.m_age-m.m_age) AS m_age, abs(h.m_global-m.m_global) AS m_global, abs(h.m_now-m.m_now) AS m_now
+		FROM 
+			(SELECT 
+				pno, H_NOISE, H_PATTERN, H_PET, H_PETWITH, H_SMOKE, H_MOOD, H_COMMUNICATION, H_PARTY, H_ENTER, M_PATTERN, M_PERSONALITY, M_PET, M_SMOKE, M_AGE, M_GENDER, M_GLOBAL, M_NOW,
+				substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+			FROM 
+				PROPENSITY 
+			WHERE 
+				pno=${param1} AND PCASE='h') h  --하우스의 pno( 메이트의 글을 보는 경우 = 처음엔 세션에 저장된 값으로 가져오고, 집을 선택해서 누를경우 해당 pno로 매칭결과를 알려준다.)
+		JOIN
+			(SELECT
+				H_NOISE, H_PATTERN, H_PET, H_PETWITH, H_SMOKE, H_MOOD, H_COMMUNICATION, H_PARTY, H_ENTER, M_PATTERN, M_PERSONALITY, M_PET, M_SMOKE, M_AGE, M_GENDER, M_GLOBAL, M_NOW,
+				substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+			FROM 
+				PROPENSITY 
+			WHERE 
+				pno=${param2} AND PCASE='m') m
+		ON 
+			h.pdate=m.pdate) 
+	</select>
+	<select id="housePropensityList" parameterType="String" resultType="com.seoulmate.home.vo.PropensityVO">
+		Select pno, userid, pcase, housename,h_noise,h_pattern, h_pet, h_petwith,h_smoke, h_mood, h_communication,h_party,
+			h_enter,h_support,h_etc, m_pattern, m_personality, m_pet,m_smoke,m_age , m_gender, m_global, m_now,
+			to_char(pdate, 'YY-MM-DD') AS pdate from Propensity where userid=#{param1} and pcase='h'
+	</select>
+  </mapper>

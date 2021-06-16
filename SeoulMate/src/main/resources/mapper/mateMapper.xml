@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.seoulmate.home.dao.MateWriteDAO">
+  	<insert id="mateInsert" parameterType="com.seoulmate.home.vo.MateWriteVO">
+  		insert into matewrite(no, pno, userid, area, matePic1, 
+		<if test="matePic2!=null and matePic2!=''">matePic2, </if>
+		<if test="matePic3!=null and matePic3!=''">matePic3, </if>
+  		deposit, rent, enterdate, minStay, maxStay,
+  		writedate, enddate, matestate, mateProfile, mateshow) 
+		values (housematesq.nextval, #{pno}, #{userid}, #{area}, #{matePic1}, 
+		<if test="matePic2!=null and matePic2!=''">#{matePic2}, </if>
+		<if test="matePic3!=null and matePic3!=''">#{matePic3}, </if>
+		#{deposit}, #{rent}, 
+		#{enterdate}, #{minStay}, #{maxStay}, sysdate, sysdate+7, '모집중', #{mateProfile}, '공개' )
+  	</insert>
+	<update id="mateUpdate" parameterType="com.seoulmate.home.vo.MateWriteVO">
+		update matewrite set 
+		matePic1=#{matePic1, jdbcType=VARCHAR}, 
+		matePic2=#{matePic2, jdbcType=VARCHAR},
+		matePic3=#{matePic3, jdbcType=VARCHAR}, 
+		deposit=#{deposit}, rent=#{rent}, enterdate=#{enterdate}, area=#{area},
+		minStay=#{minStay}, maxStay=#{maxStay}, mateProfile=#{mateProfile} where userid=#{userid} and pno=#{pno}
+	</update>
+<!-- 	<select id="mateNoSelect" resultType="int"> -->
+<!-- 		select no from matewrite where userid=#{param1} -->
+<!-- 	</select> -->
+	<select id="mateSelect" resultType="com.seoulmate.home.vo.MateWriteVO">
+		select no, pno, userid, area, matePic1, deposit, rent, to_char(enterdate, 'yyyy-mm-dd')enterdate, minStay, maxStay, writedate, enddate, matestate, mateProfile 
+		from matewrite where userid=#{param1}
+	</select>
+	<select id="MateProfilePic" resultType="String">
+  		select matePic1, matePic2, matePic3 from matewrite where userid=#{param1} and no=#{param2}
+  	</select>
+	
+	<delete id="mateDel" parameterType="com.seoulmate.home.vo.MateWriteVO">
+		delete from matewrite where no=#{param1} and userid=#{param2}	
+	</delete>
+	<select id="getNewIndexMate" parameterType="com.seoulmate.home.vo.HouseMatePagingVO" resultType="com.seoulmate.home.vo.MateWriteVO">
+		SELECT *
+		FROM (SELECT * 
+		FROM (SELECT * 
+		FROM (SELECT * 
+		FROM (SELECT * 
+		FROM (SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+			mw.enddate, mw.matestate, mw.mateprofile, g.gender, g.m_gender, g.h_noise, g.h_pattern, g.h_pet, g.h_petwith, g.h_smoke, g.h_mood, g.h_communication, g.h_party, 
+			g.h_enter, g.m_pattern, g.m_personality, g.m_pet, g.m_smoke, g.m_age, g.m_global, g.m_now, g.pdate 
+		FROM (SELECT * FROM MATEWRITE WHERE matestate='모집중' and mateshow= '공개' 
+		<if test="area != null">
+		AND area LIKE '%${area}%'
+		</if>) mw 
+		JOIN (SELECT p.userid, m.gender, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+			p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.pdate 
+		FROM (SELECT userid, gender FROM MEMBER) m 
+		JOIN (SELECT userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, 
+			m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+		FROM PROPENSITY WHERE pcase='m') p ON m.userid=p.userid) g ON mw.userid=g.userid )
+		<if test='rent != null and rent>0'>where <![CDATA[rent<=#{rent}]]></if>)
+		<if test='deposit != null and deposit>0'>where <![CDATA[deposit<=#{deposit}]]></if>)
+		<if test='gender != null and gender!=0'>where <![CDATA[gender=#{gender}]]></if>
+		ORDER BY writedate DESC)
+		
+  		where <![CDATA[rownum<=]]>${pageNum * onePageRecode} order by writedate asc)
+  		where <![CDATA[rownum<=]]><if test="pageNum==totalPage">${lastPageRecode}</if> 
+  		<if test="pageNum!=totalPage">${onePageRecode}</if> ORDER BY writedate DESC
+	</select>
+	
+  	<select id="mateTotalRecord" parameterType="com.seoulmate.home.vo.HouseMatePagingVO" resultType="int">
+  		SELECT count(no)
+		FROM (SELECT * 
+		FROM (SELECT * 
+		FROM (SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+			mw.enddate, mw.matestate, mw.mateprofile, g.gender, g.m_gender, g.h_noise, g.h_pattern, g.h_pet, g.h_petwith, g.h_smoke, g.h_mood, g.h_communication, g.h_party, 
+			g.h_enter, g.m_pattern, g.m_personality, g.m_pet, g.m_smoke, g.m_age, g.m_global, g.m_now, g.pdate 
+		FROM (SELECT * FROM MATEWRITE WHERE matestate='모집중' and mateshow= '공개' 
+		<if test="area != null">
+		AND area LIKE '%${area}%'
+		</if>) mw 
+		JOIN (SELECT p.userid, m.gender, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+			p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.pdate 
+		FROM (SELECT userid, gender FROM MEMBER) m 
+		JOIN (SELECT userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, 
+			m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+		FROM PROPENSITY WHERE pcase='m') p ON m.userid=p.userid) g ON mw.userid=g.userid )
+		<if test='rent != null and rent>0'>where <![CDATA[rent<=#{rent}]]></if>)
+		<if test='deposit != null and deposit>0'>where <![CDATA[deposit<=#{deposit}]]></if>)
+		<if test='gender != null and gender!=0'>where <![CDATA[gender=#{gender}]]></if>
+  	</select>
+	
+	<select id="mateSelect2" resultType="com.seoulmate.home.vo.MateWriteVO">
+		select no, pno, userid, area, matePic1, matePic2, matePic3, deposit, rent, to_char(enterdate, 'yyyy-mm-dd')enterdate, minStay, maxStay,
+		writedate, enddate, matestate, mateProfile from matewrite where no=#{param1}
+	</select>
+	<update id="mateAreaUpdate">
+		update member set area=#{param1} where userid=#{param2}
+	</update>
+	<select id="mateCount" resultType="int">
+		select count(pno) from matewrite where userid=#{param1}
+	</select>
+	
+  	<select id="mateMatchTotal" parameterType="com.seoulmate.home.vo.HouseMatePagingVO" resultType="int">
+		SELECT count(no) 
+	  	FROM (SELECT * 
+	  	FROM (SELECT * 
+		FROM (SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, score 
+		FROM (SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, 
+			round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+		from(SELECT mw3.NO, mw3.userid AS userid, mw3.pno AS pno, mw3.gender AS gender, mw3.m_gender AS m_gender, mw3.deposit AS deposit, mw3.rent AS rent, mw3.enterdate AS enterdate, mw3.area AS area, mw3.matepic1 AS matepic1, 
+			abs(h_h_noise-m_h_noise) AS h_noise, abs(h_h_pattern-m_h_pattern) AS h_pattern, abs(h_h_pet-m_h_pet) AS h_pet, abs(h_h_petwith-m_h_petwith) AS h_petwith, 
+			abs(h_h_smoke-m_h_smoke) AS h_smoke, abs(h_h_mood-m_h_mood) AS h_mood, abs(h_h_communication-m_h_communication) AS h_communication, abs(h_h_party-m_h_party) AS h_party, 
+			abs(h_h_enter-m_h_enter) AS h_enter, abs(h_m_pattern-m_m_pattern) AS m_pattern, abs(h_m_personality-m_m_personality) AS m_personality, abs(h_m_pet-m_m_pet) AS m_pet, 
+			abs(h_m_smoke-m_m_smoke) AS m_smoke, abs(h_m_age-m_m_age) AS m_age, abs(h_m_global-m_m_global) AS m_global, abs(h_m_now-m_m_now) AS m_now
+		FROM (SELECT mw2.NO AS NO, mw2.userid AS userid, mw2.pno AS pno, mw2.gender AS gender, mw2.m_gender AS m_gender, mw2.deposit AS deposit, mw2.rent AS rent, mw2.enterdate AS enterdate, mw2.area AS area, mw2.matepic1,
+			h.h_noise AS h_h_noise, mw2.h_noise AS m_h_noise, h.h_pattern AS h_h_pattern, mw2.h_pattern AS m_h_pattern, h.h_pet AS h_h_pet, mw2.h_pet AS m_h_pet, 
+			h.h_petwith AS h_h_petwith, mw2.h_petwith AS m_h_petwith, h.h_smoke AS h_h_smoke, mw2.h_smoke AS m_h_smoke, 
+			h.h_mood AS h_h_mood, mw2.h_mood AS m_h_mood, h.h_communication AS h_h_communication, mw2.h_communication AS m_h_communication, 
+			h.h_party AS h_h_party, mw2.h_party AS m_h_party, h.h_enter AS h_h_enter, mw2.h_enter AS m_h_enter, h.m_pattern AS h_m_pattern, mw2.m_pattern AS m_m_pattern, 
+			h.m_personality AS h_m_personality, mw2.m_personality AS m_m_personality, h.m_pet AS h_m_pet, mw2.m_pet AS m_m_pet, h.m_smoke AS h_m_smoke, mw2.m_smoke AS m_m_smoke, 
+			h.m_age AS h_m_age, mw2.m_age AS m_m_age, h.m_global AS h_m_global, mw2.m_global AS m_m_global, h.m_now AS h_m_now, mw2.m_now AS m_m_now
+		FROM (SELECT pno, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+			m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+		FROM PROPENSITY WHERE userid=#{userid} AND pcase='h' AND pno=#{pno}) h 
+		FULL OUTER JOIN 
+		(<if test='m_gender == 1 || m_gender == 3'>
+		SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+			mw.enddate, mw.matestate, mw.mateprofile, g.gender, g.m_gender, g.h_noise, g.h_pattern, g.h_pet, g.h_petwith, g.h_smoke, g.h_mood, g.h_communication, g.h_party, 
+			g.h_enter, g.m_pattern, g.m_personality, g.m_pet, g.m_smoke, g.m_age, g.m_global, g.m_now, g.pdate 
+		FROM (SELECT * FROM MATEWRITE WHERE matestate='모집중' and userid != #{userid} and mateshow= '공개') mw 
+		JOIN (SELECT p.userid, m.gender, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+			p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.pdate 
+		FROM (SELECT userid, gender FROM MEMBER) m 
+		JOIN (SELECT userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, 
+			m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+		FROM PROPENSITY WHERE pcase='m') p ON m.userid=p.userid AND m.gender=(SELECT m_gender 
+		FROM PROPENSITY WHERE userid=#{userid} AND pcase='h' AND pno=#{pno})) g ON mw.userid=g.userid
+		</if>
+		<if test='m_gender == 2'>
+		select mw1.NO, mw1.pno, mw1.userid, mw1.area, mw1.matepic1, mw1.matepic2, mw1.matepic3, mw1.deposit, mw1.rent, mw1.enterdate, mw1.minstay, mw1.maxstay, mw1.writedate, 
+			mw1.enddate, mw1.matestate, mw1.mateprofile, m.gender, mw1.m_gender,  mw1.h_noise, mw1.h_pattern, mw1.h_pet, mw1.h_petwith, mw1.h_smoke, mw1.h_mood, mw1.h_communication, mw1.h_party, 
+			mw1.h_enter, mw1.m_pattern, mw1.m_personality, mw1	.m_pet, mw1.m_smoke, mw1.m_age, mw1.m_global, mw1.m_now, mw1.pdate
+		from (select gender, userid from member) m 
+		join (SELECT mw.NO, mw.pno, mw.userid, mw.deposit, mw.rent, mw.enterdate, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.minstay, mw.maxstay, 
+			mw.writedate, mw.enddate, mw.matestate, mw.mateprofile, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication,
+			p.h_party, p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.m_gender, p.pdate
+		FROM (SELECT pno, userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+			m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+		FROM PROPENSITY WHERE pcase='m') p 
+		JOIN (SELECT NO, userid, pno, deposit, rent, enterdate, area, matepic1, matepic2, matepic3, minstay, maxstay, writedate, enddate, matestate, mateprofile 
+		FROM MATEWRITE WHERE matestate='모집중' and userid != #{userid} and mateshow= '공개') mw ON p.pno=mw.pno) mw1 on m.userid=mw1.userid and mw1.m_gender=2
+		</if>) mw2 ON h.pdate=mw2.pdate) mw3)
+		<if test='area !=null'> where area like '%${area}%'</if>)
+		<if test='rent != null and rent>0'> where <![CDATA[rent<=#{rent}]]></if>)
+		<if test='deposit != null and deposit>0'> where <![CDATA[deposit<=#{deposit}]]></if>)
+		<if test='gender != null and gender!=0'> where <![CDATA[gender=#{gender}]]></if>)
+  	</select>
+	
+	<select id="mateMatchList" resultType="com.seoulmate.home.vo.ListVO" parameterType="com.seoulmate.home.vo.HouseMatePagingVO">
+		SELECT * 
+	  	FROM (SELECT *
+	  	FROM (SELECT *
+	  	FROM (SELECT * 
+		FROM (SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, score 
+		FROM (SELECT userid, NO, pno, gender, m_gender, deposit, rent, enterdate, area, matepic1, m_pattern, m_personality, m_pet, m_smoke, 
+			round((100-((h_noise+h_pattern+h_pet+h_petwith+h_smoke+h_mood+h_communication+h_party+h_enter+m_pattern+m_personality+m_pet+m_smoke+m_age+m_global+m_now)*3.125)), 0) AS score 
+		from(SELECT mw3.NO, mw3.userid AS userid, mw3.pno AS pno, mw3.gender AS gender, mw3.m_gender AS m_gender, mw3.deposit AS deposit, mw3.rent AS rent, mw3.enterdate AS enterdate, mw3.area AS area, mw3.matepic1 AS matepic1, 
+			abs(h_h_noise-m_h_noise) AS h_noise, abs(h_h_pattern-m_h_pattern) AS h_pattern, abs(h_h_pet-m_h_pet) AS h_pet, abs(h_h_petwith-m_h_petwith) AS h_petwith, 
+			abs(h_h_smoke-m_h_smoke) AS h_smoke, abs(h_h_mood-m_h_mood) AS h_mood, abs(h_h_communication-m_h_communication) AS h_communication, abs(h_h_party-m_h_party) AS h_party, 
+			abs(h_h_enter-m_h_enter) AS h_enter, abs(h_m_pattern-m_m_pattern) AS m_pattern, abs(h_m_personality-m_m_personality) AS m_personality, abs(h_m_pet-m_m_pet) AS m_pet, 
+			abs(h_m_smoke-m_m_smoke) AS m_smoke, abs(h_m_age-m_m_age) AS m_age, abs(h_m_global-m_m_global) AS m_global, abs(h_m_now-m_m_now) AS m_now
+		FROM (SELECT mw2.NO AS NO, mw2.userid AS userid, mw2.pno AS pno, mw2.gender AS gender, mw2.m_gender AS m_gender, mw2.deposit AS deposit, mw2.rent AS rent, mw2.enterdate AS enterdate, mw2.area AS area, mw2.matepic1,
+			h.h_noise AS h_h_noise, mw2.h_noise AS m_h_noise, h.h_pattern AS h_h_pattern, mw2.h_pattern AS m_h_pattern, h.h_pet AS h_h_pet, mw2.h_pet AS m_h_pet, 
+			h.h_petwith AS h_h_petwith, mw2.h_petwith AS m_h_petwith, h.h_smoke AS h_h_smoke, mw2.h_smoke AS m_h_smoke, 
+			h.h_mood AS h_h_mood, mw2.h_mood AS m_h_mood, h.h_communication AS h_h_communication, mw2.h_communication AS m_h_communication, 
+			h.h_party AS h_h_party, mw2.h_party AS m_h_party, h.h_enter AS h_h_enter, mw2.h_enter AS m_h_enter, h.m_pattern AS h_m_pattern, mw2.m_pattern AS m_m_pattern, 
+			h.m_personality AS h_m_personality, mw2.m_personality AS m_m_personality, h.m_pet AS h_m_pet, mw2.m_pet AS m_m_pet, h.m_smoke AS h_m_smoke, mw2.m_smoke AS m_m_smoke, 
+			h.m_age AS h_m_age, mw2.m_age AS m_m_age, h.m_global AS h_m_global, mw2.m_global AS m_m_global, h.m_now AS h_m_now, mw2.m_now AS m_m_now
+		FROM (SELECT pno, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+			m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+		FROM PROPENSITY WHERE userid=#{userid} AND pcase='h' AND pno=#{pno}) h 
+		FULL OUTER JOIN 
+		(<if test='m_gender == 1 || m_gender == 3'>
+		SELECT mw.NO, mw.pno, mw.userid, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.deposit, mw.rent, mw.enterdate, mw.minstay, mw.maxstay, mw.writedate, 
+			mw.enddate, mw.matestate, mw.mateprofile, g.gender, g.m_gender, g.h_noise, g.h_pattern, g.h_pet, g.h_petwith, g.h_smoke, g.h_mood, g.h_communication, g.h_party, 
+			g.h_enter, g.m_pattern, g.m_personality, g.m_pet, g.m_smoke, g.m_age, g.m_global, g.m_now, g.pdate 
+		FROM (SELECT * FROM MATEWRITE WHERE matestate='모집중' and userid != #{userid} and mateshow= '공개') mw 
+		JOIN (SELECT p.userid, m.gender, p.m_gender, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication, p.h_party, 
+			p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.pdate 
+		FROM (SELECT userid, gender FROM MEMBER) m 
+		JOIN (SELECT userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, m_personality, 
+			m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'),1,1) AS pdate
+		FROM PROPENSITY WHERE pcase='m') p ON m.userid=p.userid AND m.gender=(SELECT m_gender 
+		FROM PROPENSITY WHERE userid=#{userid} AND pcase='h' AND pno=#{pno})) g ON mw.userid=g.userid 
+		</if>
+		<if test='m_gender == 2'>
+		select mw1.NO, mw1.pno, mw1.userid, mw1.area, mw1.matepic1, mw1.matepic2, mw1.matepic3, mw1.deposit, mw1.rent, mw1.enterdate, mw1.minstay, mw1.maxstay, mw1.writedate, 
+			mw1.enddate, mw1.matestate, mw1.mateprofile, m.gender, mw1.m_gender,  mw1.h_noise, mw1.h_pattern, mw1.h_pet, mw1.h_petwith, mw1.h_smoke, mw1.h_mood, mw1.h_communication, mw1.h_party, 
+			mw1.h_enter, mw1.m_pattern, mw1.m_personality, mw1	.m_pet, mw1.m_smoke, mw1.m_age, mw1.m_global, mw1.m_now, mw1.pdate
+		from (select gender, userid from member) m 
+		join (SELECT mw.NO, mw.pno, mw.userid, mw.deposit, mw.rent, mw.enterdate, mw.area, mw.matepic1, mw.matepic2, mw.matepic3, mw.minstay, mw.maxstay, 
+			mw.writedate, mw.enddate, mw.matestate, mw.mateprofile, p.h_noise, p.h_pattern, p.h_pet, p.h_petwith, p.h_smoke, p.h_mood, p.h_communication,
+			p.h_party, p.h_enter, p.m_pattern, p.m_personality, p.m_pet, p.m_smoke, p.m_age, p.m_global, p.m_now, p.m_gender, p.pdate
+		FROM (SELECT pno, userid, m_gender, h_noise, h_pattern, h_pet, h_petwith, h_smoke, h_mood, h_communication, h_party, h_enter, m_pattern, 
+			m_personality, m_pet, m_smoke, m_age, m_global, m_now, substr(to_char(pdate, 'YYYY'), 1,1) AS pdate 
+		FROM PROPENSITY WHERE pcase='m') p 
+		JOIN (SELECT NO, userid, pno, deposit, rent, enterdate, area, matepic1, matepic2, matepic3, minstay, maxstay, writedate, enddate, matestate, mateprofile 
+		FROM MATEWRITE WHERE matestate='모집중' and userid != #{userid} and mateshow= '공개') mw ON p.pno=mw.pno) mw1 on m.userid=mw1.userid and mw1.m_gender=2
+		</if>) mw2 ON h.pdate=mw2.pdate) mw3)
+		<if test='area !=null'> where area like '%${area}%'</if>)
+		<if test='rent != null and rent>0'> where <![CDATA[rent<=#{rent}]]></if>)
+		<if test='deposit != null and deposit>0'> where <![CDATA[deposit<=#{deposit}]]></if>)
+		<if test='gender != null and gender!=0'> where <![CDATA[gender=#{gender}]]></if> 
+		ORDER BY score DESC, no desc) 
+		
+  		where <![CDATA[rownum<=]]>${pageNum * onePageRecode} order by score asc, no asc) 
+  		where <![CDATA[rownum<=]]><if test="pageNum==totalPage">${lastPageRecode}</if> 
+  		<if test="pageNum!=totalPage">${onePageRecode}</if> ORDER BY score DESC, no desc
+	</select>
+  </mapper>

@@ -1,0 +1,67 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>SEOULMATE</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css">
+		<link rel="stylesheet" href="<%=request.getContextPath()%>/css/comm.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/js/main/comm.js"></script>
+		<script type="text/javascript" src="https://service.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/js/script.js"></script>
+		<link rel="shortcut icon" href="<%=request.getContextPath()%>/img/comm/favicon.ico" type="image/x-icon">
+	</head>
+	<body>
+	<div class="header_wrap">
+		<header>
+			<div>
+				<h1 class="logo"><a href="<%=request.getContextPath()%>/"></a></h1>
+				<ul class="main_menu">
+					<li><a href="premiumInfo" class="menu_item">프리미엄</a></li>
+					<li><a href="houseIndex" class="menu_item">쉐어하우스</a></li>
+					<li><a href="mateIndex" class="menu_item">하우스메이트</a></li>
+					<li><a href="communityList" class="menu_item">커뮤니티</a></li>
+					<li><a href="myHouseAndMateList" class="menu_item">마이페이지</a></li>
+					<li><a href="" class="menu_btn"></a></li>
+				</ul>
+			</div>
+		</header>
+		<div class="nav_wrap">
+			<nav>
+				<div class="nav_bg"></div>
+				<ul class="sub_menu">
+					<li>
+						<a href="premiumInfo">프리미엄 안내</a>
+						<c:if test="${logId!=null && logGrade=='1'}"><a href="" id="premiumPayPopup">프리미엄 결제</a></c:if>
+						<c:if test="${logGrade==2}"><a href="">프리미엄 사용중</a></c:if>
+					</li>
+					<li></li>
+					<li></li>
+					<li>
+						<a href="communityList?category=우리집 자랑">우리집 자랑</a>
+						<a href="communityList?category=중고장터">중고장터</a>
+						<a href="communityList?category=쉐어TIP">쉐어 TIP</a>
+						<a href="communityList?category=자유게시판">자유게시판</a>
+					</li>
+					<li>
+						<c:if test="${logId==null}">
+							<a href="login">로그인</a>
+							<a href="memberForm">회원가입</a>
+						</c:if>
+						<c:if test="${logId!=null}">
+							<a href="memberEdit">회원정보 관리</a>
+							<a href="memberProEdit">나의성향 관리</a>
+							<a href="myHouseAndMateList">하우스&메이트 관리</a>
+							<a href="payDetailList">결제내역</a>
+							<a href="logout">로그아웃</a>
+						</c:if>
+					</li>
+					<li></li>
+				</ul>
+			</nav>
+		</div>
+	</div>

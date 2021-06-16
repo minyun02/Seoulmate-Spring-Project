@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 파일 업로드를 하기 위해서는 MultipartResolver 객체가 필요하면
+		 xml에 객체를 생성해 놓으면 DispatcherServlet이 참조하여 파일 업로드를 구현한다. -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="-1"></property>
+		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+	<!-- 오라클, 서버위치, 아이디, 비번, 드라이브 등 설정  -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+ 		<property name="url" value="jdbc:oracle:thin:@bitcamp4.iptime.org:1522:xe" />
+ 		<property name="username" value="c##seoulmate"/>
+ 		<property name="password" value="seoul"/> 
+	</bean>
+	<!-- Mybatis 객체 생성 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<property name="mapperLocations" value="classpath:/mapper/*Mapper.xml"></property>
+	</bean>
+	<mybatis-spring:scan base-package="com.seoulmate.home.dao"/>
+</beans>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/communityWrite"/>
+			<mvc:mapping path="/communityWriteOk"/>
+			<mvc:mapping path="/communityEdit"/>
+			<mvc:mapping path="/communityEditOk"/>
+			<mvc:mapping path="/communityDel"/>
+			<mvc:mapping path="/houseMatching"/>
+			<mvc:mapping path="/houseWrite"/>
+			<mvc:mapping path="/houseWriteOk"/>
+			<mvc:mapping path="/houseEdit"/>
+			<mvc:mapping path="/houseEditOk"/>
+			<mvc:mapping path="/houseDel"/>
+			<mvc:mapping path="/mateMatching"/>
+			<mvc:mapping path="/mateWrite"/>
+			<mvc:mapping path="/mateWriteOk"/>
+			<mvc:mapping path="/mateEdit"/>
+			<mvc:mapping path="/mateEditOk"/>
+			<mvc:mapping path="/mateDel"/>
+			<mvc:mapping path="/memberEdit"/>
+			<mvc:mapping path="/memberEditForm"/>
+			<mvc:mapping path="/memberEditOk"/>
+			<mvc:mapping path="/memberProEdit"/>
+			<mvc:mapping path="/proEditNoHouseForm"/>
+			<mvc:mapping path="/proEditNoHouseOk"/>
+			<mvc:mapping path="/proDelNoHouse"/>
+			<mvc:mapping path="/proDelHouse"/>
+			<mvc:mapping path="/proEditHouseForm"/>
+			<mvc:mapping path="/proEditMateForm"/>
+			<mvc:mapping path="/proEditMateOk"/>
+			<mvc:mapping path="/proEditHouseOk"/>
+			<mvc:mapping path="/proInsertForm"/>
+			<mvc:mapping path="/proInsertOk"/>
+			<mvc:mapping path="/myHouseAndMateList"/>
+			<mvc:mapping path="/mypagePopup"/>
+			<mvc:mapping path="/houseListSelect"/>
+			<mvc:mapping path="/applyInsert"/>
+			<mvc:mapping path="/inviteInsert"/>
+			<mvc:mapping path="/mypageApplyInviteCancel"/>
+			<mvc:mapping path="/applyInviteApprove"/>
+			<mvc:mapping path="/stateComplete"/>
+			<mvc:mapping path="/likemarkInsert"/>
+			<mvc:mapping path="/likemarkDelete"/>
+			<mvc:mapping path="/likemarkCheck"/>
+			<mvc:mapping path="/payDetailList"/>
+			<mvc:mapping path="/likemarkerInsert"/>
+			<mvc:mapping path="/premiumPay"/>
+			<mvc:mapping path="/premiumPayOk"/>
+			<mvc:mapping path="/contact"/>
+			<mvc:mapping path="/contactInsert"/>
+			<mvc:mapping path="/contactUseridCheck"/>
+			<mvc:mapping path="/logout"/>
+			
+			<bean class="com.seoulmate.home.interceptor.LoginInterceptor"></bean>		
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/admin"/>
+			<mvc:mapping path="/admin/contactManagement"/>
+			<mvc:mapping path="/admin/contactDetailInfo"/>
+			<mvc:mapping path="/admin/contactAdmin"/>
+			<mvc:mapping path="/reportInsert"/>
+			<mvc:mapping path="/admin/reportManagement"/>
+			<mvc:mapping path="/admin/reportDetailInfo"/>
+			<mvc:mapping path="/admin/memberManagement"/>
+			<mvc:mapping path="/admin/memberInfo"/>
+			<mvc:mapping path="/admin/memInfoSave"/>
+			<mvc:mapping path="/admin/houseManagement"/>
+			<mvc:mapping path="/admin/houseDetailInfo"/>
+			<mvc:mapping path="/admin/mateManagement"/>
+			<mvc:mapping path="/admin/mateDetailInfo"/>
+			<mvc:mapping path="/admin/payManagement"/>
+			<mvc:mapping path="/admin/salesManagement"/>
+			<mvc:mapping path="/admin/salesUserList"/>
+			<mvc:mapping path="/admin/adminPrintPage"/>
+			<mvc:mapping path="/admin/mateManagementList"/>
+			<mvc:mapping path="/admin/faqManagement"/>
+			<mvc:mapping path="/admin/faqList"/>
+			<mvc:mapping path="/admin/faqInfo"/>
+			<mvc:mapping path="/admin/faqInsert"/>
+			<mvc:mapping path="/admin/faqEdit"/>
+			<mvc:mapping path="/admin/faqDel"/>
+			<mvc:mapping path="/admin/cancelPay"/>	
+			
+			<bean class="com.seoulmate.home.interceptor.AdminLoginInterceptor"></bean>	
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>
