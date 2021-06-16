@@ -1,3 +1,3 @@
-# Seoulmate-Spring-Project
+# 비트캠프 최종프로젝트 - 서울메이트
 
 <h2>안녕하세요</h2>
